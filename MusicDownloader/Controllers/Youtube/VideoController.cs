@@ -5,6 +5,7 @@ using MusicDownloader.Business.Requests.Youtube;
 using MusicDownloader.Business.Requests.Youtube.Video;
 using MusicDownloader.Shared.Constants;
 using YoutubeExplode.Playlists;
+using YoutubeExplode.Videos;
 
 namespace MusicDownloader.Controllers.Youtube;
 
@@ -19,6 +20,22 @@ public class VideoController : ControllerBase
     {
         _mediator = mediator;
         _logger = logger;
+    }
+
+    [HttpGet]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(Video), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetVideoMetadata([FromQuery(Name = "url")] string url)
+    {
+        // Validate
+        if (string.IsNullOrWhiteSpace(url)) return BadRequest();
+
+        // Get result
+        var request = new GetVideoDetailsRequest { Url = url };
+        var result = await _mediator.Send(request);
+
+        // Return
+        return Ok(result);
     }
 
     [HttpGet("download")]
