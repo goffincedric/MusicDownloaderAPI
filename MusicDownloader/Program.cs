@@ -9,6 +9,17 @@ await FFmpegConfigurator.ConfigureFFmpeg();
 // Create web builder
 var builder = WebApplication.CreateBuilder(args);
 
+// Cors domains
+const string allowSpecificOrigins = "AllowSpecificOrigins";
+var allowedOrigins = new[]
+{
+    "http://localhost:5173",
+    "https://localhost:5173"
+};
+builder.Services.AddCors(options => options.AddPolicy(allowSpecificOrigins, policy => policy.WithOrigins(
+    allowedOrigins
+)));
+
 // Add services to the container.
 builder.Services.AddHttpClient<ResolveVideoCoverImageRequestHandler>();
 builder.Services.AddMediatR(typeof(Program));
@@ -31,6 +42,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(allowSpecificOrigins);
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
