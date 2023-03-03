@@ -1,14 +1,14 @@
 ﻿using MediatR;
-using YoutubeExplode;
+using YoutubeReExplode;
 
 namespace MusicDownloader.Business.Requests.Youtube.Video;
 
-public class GetVideoDetailsRequest : IRequest<YoutubeExplode.Videos.Video>
+public class GetVideoDetailsRequest : IRequest<YoutubeReExplode.Videos.Video>
 {
     public string Url { get; set; }
 }
 
-public class GetVideoDetailsRequestHandler : IRequestHandler<GetVideoDetailsRequest, YoutubeExplode.Videos.Video>
+public class GetVideoDetailsRequestHandler : IRequestHandler<GetVideoDetailsRequest, YoutubeReExplode.Videos.Video>
 {
     private readonly YoutubeClient _youtube;
 
@@ -17,7 +17,7 @@ public class GetVideoDetailsRequestHandler : IRequestHandler<GetVideoDetailsRequ
         _youtube = youtube;
     }
 
-    public async Task<YoutubeExplode.Videos.Video> Handle(GetVideoDetailsRequest request, CancellationToken cancellationToken)
+    public async Task<YoutubeReExplode.Videos.Video> Handle(GetVideoDetailsRequest request, CancellationToken cancellationToken)
     {
         // Get playlist and videos
         return await _youtube.Videos.GetAsync(request.Url, cancellationToken);

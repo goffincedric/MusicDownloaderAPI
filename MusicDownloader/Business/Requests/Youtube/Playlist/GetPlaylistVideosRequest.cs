@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using YoutubeExplode;
-using YoutubeExplode.Common;
-using YoutubeExplode.Playlists;
+using YoutubeReExplode;
+using YoutubeReExplode.Common;
+using YoutubeReExplode.Playlists;
 
 namespace MusicDownloader.Business.Requests.Youtube;
 

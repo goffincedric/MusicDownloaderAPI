@@ -1,6 +1,5 @@
 using MediatR;
 using MusicDownloader.Business.Requests.Youtube.Metadata;
-using MusicDownloader.Shared.Extensions;
 using MusicDownloader.Startup;
 
 // Retrieve FFmpeg binaries for local use
@@ -56,5 +55,7 @@ app.Run();
  *  - Logging
  *  - Error handling
  *  - API Key auth
+ *  - Filter out 'artist name -' and '- artist name' from song title + trim song title
+ *  - add restriction to max 15 mins of video download + no livestreams
  */
 // Linux: sudo apt-get install -y ffmpeg libgdiplus

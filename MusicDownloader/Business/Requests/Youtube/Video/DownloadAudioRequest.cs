@@ -1,20 +1,19 @@
 ﻿using FFMpegCore;
-using FFMpegCore.Enums;
 using FFMpegCore.Pipes;
 using MediatR;
 using MusicDownloader.Business.Requests.Youtube.Metadata;
 using MusicDownloader.Shared.Constants;
-using YoutubeExplode;
-using YoutubeExplode.Playlists;
-using YoutubeExplode.Videos;
-using YoutubeExplode.Videos.Streams;
+using YoutubeReExplode;
+using YoutubeReExplode.Playlists;
+using YoutubeReExplode.Videos;
+using YoutubeReExplode.Videos.Streams;
 using VideoStream = MusicDownloader.Pocos.Youtube.VideoStream;
 
 namespace MusicDownloader.Business.Requests.Youtube.Video;
 
 public class DownloadAudioRequest : IRequest<VideoStream>
 {
-    public IVideo Video { get; set; }
+    public IMusicVideo Video { get; set; }
     public IPlaylist? Playlist { get; set; }
     public IReadOnlyList<PlaylistVideo>? PlaylistVideos { get; set; }
 }
@@ -35,6 +34,9 @@ public class DownloadAudioRequestHandler : IRequestHandler<DownloadAudioRequest,
         // Get highest quality audio stream
         var streamInfo = await GetAudioStream(request.Video, cancellationToken);
         var streamTask = _youtube.Videos.Streams.GetAsync(streamInfo, cancellationToken);
+        
+        // TODO: Deny download of livestreams & video's longer than 15?mins
+        
         // Get cover art as stream
         var coverStreamTask = _mediator.Send(new ResolveVideoCoverImageRequest
         {
@@ -71,7 +73,7 @@ public class DownloadAudioRequestHandler : IRequestHandler<DownloadAudioRequest,
         memoryStream.Position = 0;
 
         // Add metadata
-        return new VideoStream { Stream = memoryStream };
+        return new VideoStream { Stream = memoryStream};
     }
 
     private async Task<IStreamInfo> GetAudioStream(IVideo video, CancellationToken cancellationToken)

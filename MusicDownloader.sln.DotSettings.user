@@ -2,4 +2,14 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="C:\Users\Cedric\.nuget\packages\youtubeexplode.converter\6.2.5\lib\net5.0\YoutubeExplode.Converter.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\Cedric\.nuget\packages\youtubeexplode\6.2.5\lib\net5.0\YoutubeExplode.dll" /&gt;&#xD;
-&lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6af41a9f_002Dc8c9_002D4f18_002Dbbca_002D5d431e2dbf77/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Handle_MusicVideoUrl_ReturnExpectedTitle #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::203ABC17-B783-4400-AF7C-000E98E8FC96::net7.0::MusicDownloader.Tests.Business.Requests.Youtube.Metadata.ResolveVideoMetadataRequestTests.Handle_MusicVideoUrl_ReturnExpectedTitle&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=9f0f05dd_002D98b8_002D4a58_002D8f03_002Dcceb6dce5bfa/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Handle_MusicVideoUrl_ReturnExpectedTitle" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::203ABC17-B783-4400-AF7C-000E98E8FC96::net7.0::MusicDownloader.Tests.Business.Requests.Youtube.Metadata.ResolveVideoMetadataRequestTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

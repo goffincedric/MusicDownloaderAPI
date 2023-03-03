@@ -1,6 +1,6 @@
-﻿using YoutubeExplode;
+﻿using YoutubeReExplode;
 
-namespace MusicDownloader.Shared.Extensions;
+namespace MusicDownloader.Startup;
 
 public static class DependencyInjection
 {

@@ -2,7 +2,8 @@ using System.Net;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using MusicDownloader.Business.Requests.Youtube;
-using YoutubeExplode.Playlists;
+using MusicDownloader.Business.Requests.Youtube.Playlist;
+using YoutubeReExplode.Playlists;
 
 namespace MusicDownloader.Controllers.Youtube;
 
@@ -28,7 +29,7 @@ public class PlaylistController : ControllerBase
         if (string.IsNullOrWhiteSpace(url)) return BadRequest();
 
         // Get result
-        var request = new GetPlaylistMetadataRequest { Url = url };
+        var request = new GetPlaylistDetailsRequest { Url = url };
         var result = await _mediator.Send(request);
 
         // Return

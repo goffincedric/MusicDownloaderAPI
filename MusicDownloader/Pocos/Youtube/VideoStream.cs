@@ -1,6 +1,4 @@
-﻿using YoutubeExplode.Videos.Streams;
-
-namespace MusicDownloader.Pocos.Youtube;
+﻿namespace MusicDownloader.Pocos.Youtube;
 
 public class VideoStream
 {

@@ -1,13 +1,13 @@
 ﻿using MediatR;
-using YoutubeExplode.Common;
-using YoutubeExplode.Playlists;
-using YoutubeExplode.Videos;
+using YoutubeReExplode.Common;
+using YoutubeReExplode.Playlists;
+using YoutubeReExplode.Videos;
 
 namespace MusicDownloader.Business.Requests.Youtube.Metadata;
 
 public class ResolveVideoCoverImageRequest : IRequest<Stream>
 {
-    public IVideo Video { get; set; }
+    public IMusicVideo Video { get; set; }
     public IPlaylist? Playlist { get; set; }
 }
 
