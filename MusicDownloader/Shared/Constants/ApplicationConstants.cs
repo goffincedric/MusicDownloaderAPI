@@ -2,5 +2,5 @@
 
 public static class ApplicationConstants
 {
-    public static string FFmpegPath = Path.Combine("binaries", "FFmpeg");
+    public static readonly string FFmpegPath = Path.Combine("binaries", "FFmpeg");
 }
