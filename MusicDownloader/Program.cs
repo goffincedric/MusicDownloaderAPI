@@ -9,15 +9,19 @@ await FFmpegConfigurator.ConfigureFFmpeg();
 var builder = WebApplication.CreateBuilder(args);
 
 // Cors domains
-const string allowSpecificOrigins = "AllowSpecificOrigins";
-var allowedOrigins = new[]
-{
-    "http://localhost:5173",
-    "https://localhost:5173"
-};
-builder.Services.AddCors(options => options.AddPolicy(allowSpecificOrigins, policy => policy.WithOrigins(
-    allowedOrigins
-)));
+// const string allowSpecificOrigins = "AllowSpecificOrigins";
+const string allowAllOrigins = "AllowAllOrigins";
+// var allowedOrigins = new[]
+// {
+//     "http://localhost:5173",
+//     "https://localhost:5173",
+//     "http://localhost:4173",
+//     "https://localhost:4173",
+//     "https://music-downloader.goffincedric.be"
+// };
+builder.Services.AddCors(options => options.AddPolicy(allowAllOrigins, policy =>
+    policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+));
 
 // Add services to the container.
 builder.Services.AddHttpClient<ResolveVideoCoverImageRequestHandler>();
@@ -41,7 +45,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(allowSpecificOrigins);
+app.UseCors(allowAllOrigins);
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
