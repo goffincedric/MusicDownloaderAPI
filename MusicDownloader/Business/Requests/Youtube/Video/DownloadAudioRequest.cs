@@ -1,4 +1,4 @@
-﻿using FFMpegCore;
+using FFMpegCore;
 using FFMpegCore.Pipes;
 using MediatR;
 using MusicDownloader.Business.Requests.Youtube.Metadata;
@@ -65,6 +65,7 @@ public class DownloadAudioRequestHandler : IRequestHandler<DownloadAudioRequest,
                     .WithAudioBitrate(YoutubeConstants.AudioQuality)
                     .WithAudioSamplingRate(YoutubeConstants.SamplingRate)
                     .WithVideoCodec(YoutubeConstants.VideoCodec)
+                    .WithFramerate(YoutubeConstants.CoverFramerate)
                     .WithCustomArgument("-q:v 10") // Highest quality video
                     .UsingMultithreading(true)
                     .WithFastStart()
