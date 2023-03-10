@@ -1,4 +1,5 @@
-﻿using YoutubeReExplode;
+﻿using MediatR;
+using YoutubeReExplode;
 
 namespace MusicDownloader.Startup;
 
@@ -11,11 +12,17 @@ public static class DependencyInjection
 
     public static void AddLibraries(this IServiceCollection serviceCollection)
     {
-        // Add YoutubeExplode
-        AddYoutubeExplode(serviceCollection);
+        // Add YoutubeReExplode
+        AddYoutubeReExplode(serviceCollection);
+        
+        // Automapper
+        serviceCollection.AddAutoMapper(typeof(Program));
+        
+        // MediatR
+        serviceCollection.AddMediatR(typeof(Program));
     }
 
-    private static void AddYoutubeExplode(IServiceCollection serviceCollection)
+    private static void AddYoutubeReExplode(IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<YoutubeClient>();
     }

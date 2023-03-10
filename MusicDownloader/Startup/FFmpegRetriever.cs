@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using FFMpegCore;
 using MusicDownloader.Shared.Constants;
+using Serilog;
 using Xabe.FFmpeg.Downloader;
 
 namespace MusicDownloader.Startup;
@@ -10,14 +11,14 @@ public static class FFmpegConfigurator
 {
     private static async Task RetrieveFFmpegBinariesAsync()
     {
-        Console.WriteLine("Downloading FFmpeg binaries...");
+        Log.Logger.Information("Downloading FFmpeg binaries...");
         await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, ApplicationConstants.FFmpegPath);
-        Console.WriteLine("Downloaded FFmpeg binaries.");
+        Log.Logger.Information("Downloaded FFmpeg binaries.");
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            Console.WriteLine("Detected Linux OS, making downloaded binary executable...");
+            Log.Logger.Information("Detected Linux OS, making downloaded binary executable...");
             var success = Chmod(ApplicationConstants.FFmpegPath, "777", true);
-            if (!success) Console.WriteLine("WARNING !!!Couldn't make binaries executable!!!");
+            if (!success) Log.Logger.Warning("WARNING !!!Couldn't make binaries executable!!!");
         }
     }
     
