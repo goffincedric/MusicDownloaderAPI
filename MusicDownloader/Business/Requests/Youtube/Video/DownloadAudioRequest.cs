@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using FFMpegCore;
 using FFMpegCore.Builders.MetaData;
 using FFMpegCore.Pipes;
@@ -19,7 +19,7 @@ public class DownloadAudioRequest : IRequest<VideoStream>
 {
     public IMusicVideo Video { get; set; }
     public IPlaylist? Playlist { get; set; }
-    public IReadOnlyList<PlaylistVideo>? PlaylistVideos { get; set; }
+    public List<PlaylistVideo>? PlaylistVideos { get; set; }
 }
 
 public class DownloadAudioRequestHandler : IRequestHandler<DownloadAudioRequest, VideoStream>
@@ -62,19 +62,20 @@ public class DownloadAudioRequestHandler : IRequestHandler<DownloadAudioRequest,
         }, cancellationToken);
 
         // Create metadata
-        var metadataTask = _mediator.Send(new ResolveVideoMetadataRequest
+        var videoMetadata = await _mediator.Send(new ResolveVideoMetadataRequest
         {
             Video = request.Video,
             Playlist = request.Playlist,
             PlaylistVideos = request.PlaylistVideos
         }, cancellationToken);
+        var metadata = MapMetadata(videoMetadata);
 
         // Transcode to ogg and encode metadata
         var memoryStream = new MemoryStream();
         await FFMpegArguments
             .FromPipeInput(new StreamPipeSource(await streamTask))
             .AddPipeInput(new StreamPipeSource(await coverStreamTask))
-            .AddMetaData(await metadataTask)
+            .AddMetaData(metadata)
             .OutputToPipe(new StreamPipeSink(memoryStream),
                 options => options
                     .ForceFormat(YoutubeConstants.Container)
@@ -91,7 +92,21 @@ public class DownloadAudioRequestHandler : IRequestHandler<DownloadAudioRequest,
         memoryStream.Position = 0;
 
         // Add metadata
-        return new VideoStream { Stream = memoryStream};
+        return new VideoStream { Stream = memoryStream };
+    }
+
+    private static IReadOnlyMetaData MapMetadata(VideoMetadata videoMetadata)
+    {
+        var metadata = new MetaData();
+        // Map metadata
+        metadata.Entries.Add(MetadataConstants.VorbisTags.Artist, videoMetadata.Author);
+        metadata.Entries.Add(MetadataConstants.VorbisTags.Title, videoMetadata.Title);
+        if (videoMetadata.Album != null)
+            metadata.Entries.Add(MetadataConstants.VorbisTags.Album, videoMetadata.Album);
+        if (videoMetadata.TrackNumber.HasValue)
+            metadata.Entries.Add(MetadataConstants.VorbisTags.TrackNumber, videoMetadata.TrackNumber.Value.ToString());
+        // Return metadata
+        return metadata;
     }
 
     private async Task<IStreamInfo> GetAudioStream(IVideo video, CancellationToken cancellationToken)

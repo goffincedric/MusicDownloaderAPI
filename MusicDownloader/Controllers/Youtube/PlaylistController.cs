@@ -1,9 +1,9 @@
 using System.Net;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using MusicDownloader.Business.Requests.Youtube;
 using MusicDownloader.Business.Requests.Youtube.Playlist;
 using MusicDownloader.Controllers._base;
+using MusicDownloader.Pocos.Youtube;
 using YoutubeReExplode.Playlists;
 using ILogger = Serilog.ILogger;
 
@@ -28,8 +28,7 @@ public class PlaylistController : ApiControllerBase
         if (string.IsNullOrWhiteSpace(url)) return BadRequest();
 
         // Get result
-        var request = new GetPlaylistDetailsRequest { Url = url };
-        var result = await _mediator.Send(request);
+        var result = await _mediator.Send(new GetPlaylistDetailsRequest { Url = url });
 
         // Return
         return Ok(result);
@@ -37,15 +36,14 @@ public class PlaylistController : ApiControllerBase
 
     [HttpGet("videos")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(IReadOnlyList<PlaylistVideo>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<VideoMetadata>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetPlaylistVideos([FromQuery(Name = "url")] string url)
     {
         // Validate
         if (string.IsNullOrWhiteSpace(url)) return BadRequest();
 
         // Get result
-        var request = new GetPlaylistVideosRequest { Url = url };
-        var result = await _mediator.Send(request);
+        var result = await _mediator.Send(new GetPlaylistVideosRequest { Url = url });
 
         // Return
         return Ok(result);

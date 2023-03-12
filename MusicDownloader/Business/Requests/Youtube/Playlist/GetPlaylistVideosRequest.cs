@@ -3,14 +3,15 @@ using YoutubeReExplode;
 using YoutubeReExplode.Common;
 using YoutubeReExplode.Playlists;
 
-namespace MusicDownloader.Business.Requests.Youtube;
+namespace MusicDownloader.Business.Requests.Youtube.Playlist;
 
-public class GetPlaylistVideosRequest : IRequest<IReadOnlyList<PlaylistVideo>>
+public class GetPlaylistVideosRequest : IRequest<IEnumerable<PlaylistVideo>>
 {
     public string Url { get; set; }
+    public bool IncludeLiveStreams { get; set; } = false;
 }
 
-public class GetPlaylistVideosRequestHandler : IRequestHandler<GetPlaylistVideosRequest, IReadOnlyList<PlaylistVideo>>
+public class GetPlaylistVideosRequestHandler : IRequestHandler<GetPlaylistVideosRequest, IEnumerable<PlaylistVideo>>
 {
     private readonly YoutubeClient _youtube;
 
@@ -19,10 +20,13 @@ public class GetPlaylistVideosRequestHandler : IRequestHandler<GetPlaylistVideos
         _youtube = youtube;
     }
 
-    public async Task<IReadOnlyList<PlaylistVideo>> Handle(GetPlaylistVideosRequest metadataRequest,
+    public async Task<IEnumerable<PlaylistVideo>> Handle(GetPlaylistVideosRequest metadataRequest,
         CancellationToken cancellationToken)
     {
         // Get playlist and videos
-        return await _youtube.Playlists.GetVideosAsync(metadataRequest.Url, cancellationToken);
+        var playlistVideosTask = _youtube.Playlists.GetVideosAsync(metadataRequest.Url, cancellationToken);
+        if (metadataRequest.IncludeLiveStreams) return await playlistVideosTask;
+        var playlistVideos = await playlistVideosTask;
+        return playlistVideos.Where(video => !video.IsLive);
     }
 }

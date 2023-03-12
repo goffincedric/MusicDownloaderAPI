@@ -25,18 +25,18 @@ public class VideoController : ApiControllerBase
 
     [HttpGet]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(Video), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(VideoMetadata), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetVideoMetadata([FromQuery(Name = "url")] string url)
     {
         // Validate
         if (string.IsNullOrWhiteSpace(url)) return BadRequest();
 
         // Get result
-        var request = new GetVideoDetailsRequest { Url = url };
-        var result = await _mediator.Send(request);
+        var video = await _mediator.Send(new GetVideoDetailsRequest { Url = url });
+        var metadata = await _mediator.Send(new ResolveVideoMetadataRequest { Video = video });
 
         // Return
-        return Ok(result);
+        return Ok(metadata);
     }
 
     [HttpGet("download")]
@@ -46,21 +46,19 @@ public class VideoController : ApiControllerBase
     {
         // Validate
         if (string.IsNullOrWhiteSpace(url)) return BadRequest();
-
         // Get videoDetails
         var videoDetails = await _mediator.Send(new GetVideoDetailsRequest { Url = url });
-        // Validate it is not a livestream
 
         // Get playlist details
         IPlaylist? playlistDetails = null;
-        IReadOnlyList<PlaylistVideo>? playlistVideos = null;
+        List<PlaylistVideo>? playlistVideos = null;
         try
         {
             var playlistDetailsTask = _mediator.Send(new GetPlaylistDetailsRequest { Url = url });
             var playlistVideosTask = _mediator.Send(new GetPlaylistVideosRequest { Url = url });
             await Task.WhenAny(playlistDetailsTask, playlistVideosTask);
             playlistDetails = playlistDetailsTask.Result;
-            playlistVideos = playlistVideosTask.Result;
+            playlistVideos = playlistVideosTask.Result.ToList();
         }
         catch (Exception)
         {

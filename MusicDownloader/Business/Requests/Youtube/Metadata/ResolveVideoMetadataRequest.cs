@@ -1,38 +1,34 @@
 ﻿using System.Text.RegularExpressions;
-using FFMpegCore.Builders.MetaData;
 using MediatR;
+using MusicDownloader.Pocos.Youtube;
 using MusicDownloader.Shared.Constants;
-using MusicDownloader.Shared.Extensions;
+using YoutubeReExplode.Common;
 using YoutubeReExplode.Playlists;
 using YoutubeReExplode.Videos;
 
 namespace MusicDownloader.Business.Requests.Youtube.Metadata;
 
-public class ResolveVideoMetadataRequest : IRequest<MetaData>
+public class ResolveVideoMetadataRequest : IRequest<VideoMetadata>
 {
     public IMusicVideo Video { get; set; }
     public IPlaylist? Playlist { get; set; }
-    public IReadOnlyList<PlaylistVideo>? PlaylistVideos { get; set; }
+    public List<PlaylistVideo>? PlaylistVideos { get; set; }
 }
 
-public class ResolveVideoMetadataRequestHandler : IRequestHandler<ResolveVideoMetadataRequest, MetaData>
+public class ResolveVideoMetadataRequestHandler : IRequestHandler<ResolveVideoMetadataRequest, VideoMetadata>
 {
-    public Task<MetaData> Handle(ResolveVideoMetadataRequest request, CancellationToken cancellationToken)
+    public Task<VideoMetadata> Handle(ResolveVideoMetadataRequest request, CancellationToken cancellationToken)
     {
         // Author name
         string author;
         if (request.Video.Music?.Artists?.Length > 0)
-        {
             author = string.Join(", ", request.Video.Music.Artists);
-        }
-        // else if (RegexConstants.Youtube.ARTIST_EXTRACTION.IsMatch(request.Video))
-        // {
-        //     
-        // }
         else
-        {
-            author = CleanupAuthorName(request.Video.Author.ChannelName ?? request.Playlist?.Author?.ChannelTitle ?? request.Video.Author.ChannelTitle);
-        }
+            author = CleanupAuthorName(
+                request.Video.Author.ChannelName ??
+                request.Playlist?.Author?.ChannelTitle ??
+                request.Video.Author.ChannelTitle
+            );
 
         // Song name
         var title = request.Video.Music?.Song ?? CleanupTitle(request.Video.Title, author);
@@ -51,17 +47,17 @@ public class ResolveVideoMetadataRequestHandler : IRequestHandler<ResolveVideoMe
             if (index >= 0) trackNumber = index + 1;
         }
 
-        // Add metadata
-        var metadata = new MetaData();
-        metadata.Entries.Add(MetadataConstants.VorbisTags.Artist, author);
-        metadata.Entries.Add(MetadataConstants.VorbisTags.Title, title);
-        if (playlist != null)
-            metadata.Entries.Add(MetadataConstants.VorbisTags.Album, playlist);
-        if (trackNumber.HasValue)
-            metadata.Entries.Add(MetadataConstants.VorbisTags.TrackNumber, trackNumber.Value.ToString());
-
-        // Return metadata
-        return Task.FromResult(metadata);
+        // Map and return metadata
+        return Task.FromResult(new VideoMetadata
+        {
+            Title = title,
+            Author = author,
+            Album = playlist,
+            TrackNumber = trackNumber,
+            Url = request.Video.Url,
+            IsLive = request.Video.IsLive,
+            Thumbnail = request.Video.Thumbnails.TryGetWithHighestResolution()!
+        });
     }
 
     private static readonly List<Regex> AuthorRegexes = RegexConstants.Youtube.VEVO_REGEXES.Concat(new List<Regex>
