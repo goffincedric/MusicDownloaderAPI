@@ -3,20 +3,19 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using MusicDownloader.Business.Requests.Youtube;
 using MusicDownloader.Business.Requests.Youtube.Playlist;
+using MusicDownloader.Controllers._base;
 using YoutubeReExplode.Playlists;
+using ILogger = Serilog.ILogger;
 
 namespace MusicDownloader.Controllers.Youtube;
 
-[ApiController]
 [Route("youtube/[controller]")]
-public class PlaylistController : ControllerBase
+public class PlaylistController : ApiControllerBase
 {
-    private readonly ILogger<PlaylistController> _logger;
     private readonly IMediator _mediator;
 
-    public PlaylistController(ILogger<PlaylistController> logger, IMediator mediator)
+    public PlaylistController(ILogger logger, IMediator mediator) : base(logger)
     {
-        _logger = logger;
         _mediator = mediator;
     }
 

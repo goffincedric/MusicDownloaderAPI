@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using MusicDownloader.Business.Requests.Youtube.Metadata;
 using MusicDownloader.Business.Requests.Youtube.Playlist;
 using MusicDownloader.Business.Requests.Youtube.Video;
+using MusicDownloader.Controllers._base;
 using MusicDownloader.Pocos.Youtube;
 using MusicDownloader.Shared.Constants;
 using MusicDownloader.Shared.Extensions;
@@ -12,17 +13,14 @@ using ILogger = Serilog.ILogger;
 
 namespace MusicDownloader.Controllers.Youtube;
 
-[ApiController]
 [Route("youtube/[controller]")]
-public class VideoController : ControllerBase
+public class VideoController : ApiControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly ILogger _logger;
 
-    public VideoController(ILogger logger, IMediator mediator)
+    public VideoController(ILogger logger, IMediator mediator) : base(logger)
     {
         _mediator = mediator;
-        _logger = logger;
     }
 
     [HttpGet]
@@ -66,7 +64,7 @@ public class VideoController : ControllerBase
         }
         catch (Exception)
         {
-            _logger.Information("Couldn't resolve playlist info from url.");
+            Logger.Information("Couldn't resolve playlist info from url.");
         }
 
         // Download audio
