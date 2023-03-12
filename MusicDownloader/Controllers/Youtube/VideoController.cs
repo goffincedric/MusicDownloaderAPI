@@ -76,8 +76,9 @@ public class VideoController : ApiControllerBase
 
         // Set filename in header and return stream
         Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
+        // TODO: Move file naming logic to downloadAudioRequest. Wrap stream in class that contains stream + filename + extra details
         Response.Headers.Add("Content-Disposition",
-            $"attachment; filename=\"{videoDetails.Title}.{YoutubeConstants.Container}\"");
+            $"attachment; filename=\"{videoDetails.Title.ToSafeFilename()}.{YoutubeConstants.Container}\"");
         return File(videoStream.Stream, $"audio/{YoutubeConstants.Container}", true);
     }
 }
