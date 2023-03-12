@@ -1,12 +1,14 @@
 using System.Net;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using MusicDownloader.Business.Requests.Youtube;
+using MusicDownloader.Business.Requests.Youtube.Metadata;
 using MusicDownloader.Business.Requests.Youtube.Playlist;
 using MusicDownloader.Business.Requests.Youtube.Video;
+using MusicDownloader.Pocos.Youtube;
 using MusicDownloader.Shared.Constants;
+using MusicDownloader.Shared.Extensions;
 using YoutubeReExplode.Playlists;
-using YoutubeReExplode.Videos;
+using ILogger = Serilog.ILogger;
 
 namespace MusicDownloader.Controllers.Youtube;
 
@@ -15,9 +17,9 @@ namespace MusicDownloader.Controllers.Youtube;
 public class VideoController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly ILogger<VideoController> _logger;
+    private readonly ILogger _logger;
 
-    public VideoController(ILogger<VideoController> logger, IMediator mediator)
+    public VideoController(ILogger logger, IMediator mediator)
     {
         _mediator = mediator;
         _logger = logger;
@@ -62,9 +64,9 @@ public class VideoController : ControllerBase
             playlistDetails = playlistDetailsTask.Result;
             playlistVideos = playlistVideosTask.Result;
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
+            _logger.Information("Couldn't resolve playlist info from url.");
         }
 
         // Download audio

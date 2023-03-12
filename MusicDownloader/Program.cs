@@ -50,11 +50,14 @@ try
 
     // Use cors policy
     app.UseCors(allowAllOrigins);
-    
     // Redirect http to https
     app.UseHttpsRedirection();
     // Enable authorization middleware
     app.UseAuthorization();
+    
+    // Register custom middlewares
+    app.RegisterCustomMiddlewares();
+    
     // Map controller endpoints
     app.MapControllers();
 

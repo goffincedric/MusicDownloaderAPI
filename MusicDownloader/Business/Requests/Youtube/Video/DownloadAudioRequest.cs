@@ -1,8 +1,12 @@
+using System.Net;
 using FFMpegCore;
+using FFMpegCore.Builders.MetaData;
 using FFMpegCore.Pipes;
 using MediatR;
 using MusicDownloader.Business.Requests.Youtube.Metadata;
+using MusicDownloader.Pocos.Youtube;
 using MusicDownloader.Shared.Constants;
+using MusicDownloader.Shared.Edxceptions;
 using YoutubeReExplode;
 using YoutubeReExplode.Playlists;
 using YoutubeReExplode.Videos;
@@ -31,12 +35,25 @@ public class DownloadAudioRequestHandler : IRequestHandler<DownloadAudioRequest,
 
     public async Task<VideoStream> Handle(DownloadAudioRequest request, CancellationToken cancellationToken)
     {
+        // Check if video is livestream
+        if (request.Video.IsLive)
+            throw new MusicDownloaderException(
+                "Livestreams cannot be downloaded",
+                ErrorCodes.Youtube.LivestreamDownloadNotAllowed,
+                HttpStatusCode.BadRequest
+            );
+        // Check if video doesn't go over allowed maximum duration
+        if (request.Video.Duration > YoutubeConstants.MaxAllowedDownloadDuration)
+            throw new MusicDownloaderException(
+                $@"Videos longer than {YoutubeConstants.MaxAllowedDownloadDuration.ToString()} cannot be downloaded",
+                ErrorCodes.Youtube.LongVideoDownloadNotAllowed,
+                HttpStatusCode.BadRequest
+            );
+
         // Get highest quality audio stream
         var streamInfo = await GetAudioStream(request.Video, cancellationToken);
         var streamTask = _youtube.Videos.Streams.GetAsync(streamInfo, cancellationToken);
-        
-        // TODO: Deny download of livestreams & video's longer than 15?mins
-        
+
         // Get cover art as stream
         var coverStreamTask = _mediator.Send(new ResolveVideoCoverImageRequest
         {
