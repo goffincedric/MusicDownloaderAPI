@@ -5,6 +5,7 @@ namespace MusicDownloader.Shared.Constants;
 public static class YoutubeConstants
 {
     public static readonly TimeSpan MaxAllowedDownloadDuration = new(1, 0, 0);
+    public static readonly int MinRequiredCoverResolution = 600 * 600;
 
     public const string Container = "ogg";
     public static readonly Codec AudioCodec = FFMpegCore.Enums.AudioCodec.LibVorbis;
