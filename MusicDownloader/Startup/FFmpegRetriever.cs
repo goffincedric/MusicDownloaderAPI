@@ -7,17 +7,17 @@ using Xabe.FFmpeg.Downloader;
 
 namespace MusicDownloader.Startup;
 
-public static class FFmpegConfigurator
+public static class FFMpegConfigurator
 {
-    private static async Task RetrieveFFmpegBinariesAsync()
+    private static async Task RetrieveFFMpegBinariesAsync()
     {
-        Log.Logger.Information("Downloading FFmpeg binaries...");
-        await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, ApplicationConstants.FFmpegPath);
-        Log.Logger.Information("Downloaded FFmpeg binaries.");
+        Log.Logger.Information("Downloading FFMpeg binaries...");
+        await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, ApplicationConstants.FFMpegPath);
+        Log.Logger.Information("Downloaded FFMpeg binaries.");
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             Log.Logger.Information("Detected Linux OS, making downloaded binary executable...");
-            var success = Chmod(ApplicationConstants.FFmpegPath, "777", true);
+            var success = Chmod(ApplicationConstants.FFMpegPath, "777", true);
             if (!success) Log.Logger.Warning("WARNING !!!Couldn't make binaries executable!!!");
         }
     }
@@ -37,11 +37,11 @@ public static class FFmpegConfigurator
         }
     }
 
-    public static async Task ConfigureFFmpeg()
+    public static async Task ConfigureFFMpeg()
     {
-        await RetrieveFFmpegBinariesAsync();
+        await RetrieveFFMpegBinariesAsync();
         
-        // Configure FFmpegCore
-        GlobalFFOptions.Configure(options => options.BinaryFolder = ApplicationConstants.FFmpegPath);
+        // Configure FFMpegCore
+        GlobalFFOptions.Configure(options => options.BinaryFolder = ApplicationConstants.FFMpegPath);
     }
 }

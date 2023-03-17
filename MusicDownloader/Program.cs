@@ -1,4 +1,3 @@
-using MusicDownloader.Business.Requests.Youtube.Metadata;
 using MusicDownloader.Startup;
 using Serilog;
 
@@ -9,12 +8,12 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    // Retrieve FFmpeg binaries for local use
-    await FFmpegConfigurator.ConfigureFFmpeg();
+    // Retrieve FFMpeg binaries for local use
+    await FFMpegConfigurator.ConfigureFFMpeg();
 
     // Create web builder
     var builder = WebApplication.CreateBuilder(args);
-    
+
     // Add serilog functionality
     builder.Host.UseSerilog();
 
@@ -25,7 +24,7 @@ try
     ));
 
     // Add services to the container.
-    builder.Services.AddHttpClient<ResolveVideoCoverImageRequestHandler>();
+    builder.Services.AddHttpClient();
     builder.Services.AddLibraries();
     builder.Services.AddBusiness();
 
@@ -54,10 +53,10 @@ try
     app.UseHttpsRedirection();
     // Enable authorization middleware
     app.UseAuthorization();
-    
+
     // Register custom middlewares
     app.RegisterCustomMiddlewares();
-    
+
     // Map controller endpoints
     app.MapControllers();
 
@@ -75,10 +74,9 @@ finally
 
 /*
  * TODO:
- *  - Logging
- *  - Error handling
+ *  - Filter out livestreams from playlists
  *  - API Key auth
  *  - Filter out 'artist name -' and '- artist name' from song title + trim song title
- *  - add restriction to max 15 mins of video download + no livestreams
+ *  - Make docker container pull latest changes to stay up-to-date
  */
 // Linux: sudo apt-get install -y ffmpeg libgdiplus

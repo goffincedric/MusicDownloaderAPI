@@ -1,14 +1,15 @@
 using System.Net;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using MusicDownloader.Business.Requests.Youtube.Metadata;
-using MusicDownloader.Business.Requests.Youtube.Playlist;
+using MusicDownloader.Business.Models;
+using MusicDownloader.Business.Requests.Music.Download;
+using MusicDownloader.Business.Requests.Music.Metadata;
 using MusicDownloader.Business.Requests.Youtube.Video;
+using MusicDownloader.Business.Strategies.MetadataMapping;
+using MusicDownloader.Business.Strategies.MusicDownload;
 using MusicDownloader.Controllers._base;
 using MusicDownloader.Pocos.Youtube;
 using MusicDownloader.Shared.Constants;
-using MusicDownloader.Shared.Extensions;
-using YoutubeReExplode.Playlists;
 using ILogger = Serilog.ILogger;
 
 namespace MusicDownloader.Controllers.Youtube;
@@ -25,7 +26,7 @@ public class VideoController : ApiControllerBase
 
     [HttpGet]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(VideoMetadata), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(TrackDetails), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetVideoMetadata([FromQuery(Name = "url")] string url)
     {
         // Validate
@@ -33,10 +34,9 @@ public class VideoController : ApiControllerBase
 
         // Get result
         var video = await _mediator.Send(new GetVideoDetailsRequest { Url = url });
-        var metadata = await _mediator.Send(new ResolveVideoMetadataRequest { Video = video });
 
         // Return
-        return Ok(metadata);
+        return Ok(video);
     }
 
     [HttpGet("download")]
@@ -46,37 +46,18 @@ public class VideoController : ApiControllerBase
     {
         // Validate
         if (string.IsNullOrWhiteSpace(url)) return BadRequest();
-        // Get videoDetails
-        var videoDetails = await _mediator.Send(new GetVideoDetailsRequest { Url = url });
 
-        // Get playlist details
-        IPlaylist? playlistDetails = null;
-        List<PlaylistVideo>? playlistVideos = null;
-        try
+        // Download audio using youtube strategy
+        var videoStream = await _mediator.Send(new DownloadAudioRequest
         {
-            var playlistDetailsTask = _mediator.Send(new GetPlaylistDetailsRequest { Url = url });
-            var playlistVideosTask = _mediator.Send(new GetPlaylistVideosRequest { Url = url });
-            await Task.WhenAny(playlistDetailsTask, playlistVideosTask);
-            playlistDetails = playlistDetailsTask.Result;
-            playlistVideos = playlistVideosTask.Result.ToList();
-        }
-        catch (Exception)
-        {
-            Logger.Information("Couldn't resolve playlist info from url.");
-        }
+            Url = url,
+            DownloadStrategy = new YoutubeDownloadStrategy(_mediator),
+            MetadataMapperStrategy = new VorbisMetadataMapper()
+        });
 
-        // Download audio
-        var request = new DownloadAudioRequest
-        {
-            Video = videoDetails, Playlist = playlistDetails, PlaylistVideos = playlistVideos
-        };
-        var videoStream = await _mediator.Send(request);
-
-        // Set filename in header and return stream
+        // Set response headers to correctly reflect stream contents and return stream as file
         Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
-        // TODO: Move file naming logic to downloadAudioRequest. Wrap stream in class that contains stream + filename + extra details
-        Response.Headers.Add("Content-Disposition",
-            $"attachment; filename=\"{videoDetails.Title.ToSafeFilename()}.{YoutubeConstants.Container}\"");
-        return File(videoStream.Stream, $"audio/{YoutubeConstants.Container}", true);
+        Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{videoStream.FileName}\"");
+        return File(videoStream.Stream, $"audio/{videoStream.Container}", true);
     }
 }
