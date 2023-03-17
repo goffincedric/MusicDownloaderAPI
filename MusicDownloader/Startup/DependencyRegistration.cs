@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Serilog;
+﻿using Serilog;
 using YoutubeReExplode;
 
 namespace MusicDownloader.Startup;
@@ -15,15 +14,15 @@ public static class DependencyInjection
     {
         // Add serilog
         serviceCollection.AddSingleton(Log.Logger);
-        
+
         // Add YoutubeReExplode
         AddYoutubeReExplode(serviceCollection);
-        
+
         // Automapper
         serviceCollection.AddAutoMapper(typeof(Program));
-        
+
         // MediatR
-        serviceCollection.AddMediatR(typeof(Program));
+        serviceCollection.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
     }
 
     private static void AddYoutubeReExplode(IServiceCollection serviceCollection)
