@@ -1,20 +1,29 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+﻿FROM mcr.microsoft.com/dotnet/sdk:7.0 as base
+RUN apt-get update && \
+    apt-get install -yq ssh git
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM base as hot
+# Setup git SSH
+ARG PORTAINER_SSH_KEY
+RUN mkdir /root/.ssh/ && \
+    echo $PORTAINER_SSH_KEY | base64 --decode >> /root/.ssh/docker_key && \
+    chmod 400 /root/.ssh/docker_key && \
+    touch /root/.ssh/known_hosts && \
+    ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN git config --global user.email "temp@temp.com" && git config --global user.name "Portainer"
+
+# Clone solution from github
 WORKDIR /src
-COPY ["MusicDownloader/MusicDownloader.csproj", "MusicDownloader/"]
+RUN eval $(ssh-agent) && ssh-add /root/.ssh/docker_key && git clone --branch feature/auto-updating-docker git@github.com:goffincedric/MusicDownloaderAPI.git
+WORKDIR MusicDownloaderAPI
+# Restore packages in advance for faster updates
 RUN dotnet restore "MusicDownloader/MusicDownloader.csproj"
-COPY . .
-WORKDIR "/src/MusicDownloader"
-RUN dotnet build "MusicDownloader.csproj" -c Release -o /app/build
 
-FROM build AS publish
-RUN dotnet publish "MusicDownloader.csproj" -c Release -o /app/publish
+FROM hot as final
+WORKDIR /src/MusicDownloaderAPI
+# Expose ports and run server
+EXPOSE 80
+# Set environment variables
+ENV ASPNETCORE_URLS=http://+:80
 
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MusicDownloader.dll"]
+CMD ./MusicDownloader/scripts/update.sh && ./MusicDownloader/scripts/publish.sh && ./MusicDownloader/scripts/run.sh
