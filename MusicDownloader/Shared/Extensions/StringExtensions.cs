@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MusicDownloader.Shared.Extensions;
 
@@ -19,7 +20,20 @@ public static class StringExtensions
         {
             if (UNSAFE_FILENAME_CHARS.Contains(sanitizedFileName[1])) sanitizedFileName[i] = '_';
         }
+
         return new string(sanitizedFileName);
+    }
+
+    public static string ToPrintableASCIIOnly(this string s)
+    {
+        var sb = new StringBuilder();
+        foreach (var ch in s)
+        {
+            // Printable ASCII range
+            if (ch >= 32 && ch < 127) sb.Append(ch);
+        }
+
+        return sb.ToString();
     }
 
     public static string EncodeBase64(this string s)

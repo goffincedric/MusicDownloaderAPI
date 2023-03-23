@@ -1,14 +1,13 @@
 using System.Net;
+using System.Net.Http.Headers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using MusicDownloader.Business.Models;
 using MusicDownloader.Business.Requests.Music.Download;
-using MusicDownloader.Business.Requests.Music.Metadata;
 using MusicDownloader.Business.Requests.Youtube.Video;
 using MusicDownloader.Business.Strategies.MetadataMapping;
 using MusicDownloader.Business.Strategies.MusicDownload;
 using MusicDownloader.Controllers._base;
-using MusicDownloader.Pocos.Youtube;
 using MusicDownloader.Shared.Constants;
 using ILogger = Serilog.ILogger;
 
@@ -57,7 +56,11 @@ public class VideoController : ApiControllerBase
 
         // Set response headers to correctly reflect stream contents and return stream as file
         Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
-        Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{videoStream.FileName}\"");
+        Response.Headers.Add("Content-Disposition", new ContentDispositionHeaderValue("attachment")
+        {
+            FileName = videoStream.FileName,
+            FileNameStar = videoStream.FileName
+        }.ToString());
         return File(videoStream.Stream, $"audio/{videoStream.Container}", true);
     }
 }
