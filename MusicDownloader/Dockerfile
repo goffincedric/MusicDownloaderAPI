@@ -14,7 +14,7 @@ RUN git config --global user.email "temp@temp.com" && git config --global user.n
 
 # Clone solution from github
 WORKDIR /src
-RUN eval $(ssh-agent) && ssh-add /root/.ssh/docker_key && git clone --branch feature/auto-updating-docker git@github.com:goffincedric/MusicDownloaderAPI.git
+RUN eval $(ssh-agent) && ssh-add /root/.ssh/docker_key && git clone --branch main git@github.com:goffincedric/MusicDownloaderAPI.git
 WORKDIR MusicDownloaderAPI
 # Restore packages in advance for faster updates
 RUN dotnet restore "MusicDownloader/MusicDownloader.csproj"
