@@ -93,5 +93,8 @@ fabric.properties
 
 
 
+# Custom ignores
 .idea/**
 MusicDownloader/binaries/**
+
+.env

@@ -1,9 +1,9 @@
 ﻿using System.Text.Json;
 using AutoMapper;
-using MusicDownloader.Controllers.Models;
+using MusicDownloader.Api.Models;
 using ILogger = Serilog.ILogger;
 
-namespace MusicDownloader.Controllers.Middleware;
+namespace MusicDownloader.Api.Middleware;
 
 public class GlobalExceptionHandlingMiddleware
 {
