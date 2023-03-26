@@ -1,4 +1,4 @@
-﻿using MusicDownloader.Controllers.Middleware;
+﻿using MusicDownloader.Api.Middleware;
 
 namespace MusicDownloader.Startup;
 

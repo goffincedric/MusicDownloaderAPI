@@ -1,20 +1,21 @@
 using System.Net;
 using System.Net.Http.Headers;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MusicDownloader.Api.Controllers._base;
 using MusicDownloader.Business.Models;
 using MusicDownloader.Business.Requests.Music.Download;
 using MusicDownloader.Business.Requests.Youtube.Video;
 using MusicDownloader.Business.Strategies.MetadataMapping;
 using MusicDownloader.Business.Strategies.MusicDownload;
-using MusicDownloader.Controllers._base;
 using MusicDownloader.Shared.Constants;
 using ILogger = Serilog.ILogger;
 
-namespace MusicDownloader.Controllers.Youtube;
+namespace MusicDownloader.Api.Controllers.Youtube;
 
 [Route("youtube/[controller]")]
-public class VideoController : ApiControllerBase
+public class VideoController : AuthenticatedAnonymousApiController
 {
     private readonly IMediator _mediator;
 

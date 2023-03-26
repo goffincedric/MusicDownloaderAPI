@@ -1,18 +1,18 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using MusicDownloader.Controllers.Models;
+using MusicDownloader.Api.Models;
 using ILogger = Serilog.ILogger;
 
-namespace MusicDownloader.Controllers._base;
+namespace MusicDownloader.Api.Controllers._base;
 
 [ApiController]
 [ProducesResponseType(typeof(ErrorDetails), (int)HttpStatusCode.BadRequest)]
 [ProducesResponseType(typeof(ErrorDetails), (int)HttpStatusCode.InternalServerError)]
-public class ApiControllerBase : ControllerBase
+public class AnonymousApiController : ControllerBase
 {
     protected readonly ILogger Logger;
 
-    public ApiControllerBase(ILogger logger)
+    public AnonymousApiController(ILogger logger)
     {
         Logger = logger;
     }
