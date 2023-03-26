@@ -1,4 +1,4 @@
-﻿namespace MusicDownloader.Controllers.Models;
+﻿namespace MusicDownloader.Api.Models;
 
 public class ErrorDetails
 {

@@ -1,17 +1,16 @@
 using System.Net;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MusicDownloader.Api.Controllers._base;
 using MusicDownloader.Business.Models;
 using MusicDownloader.Business.Requests.Youtube.Playlist;
-using MusicDownloader.Controllers._base;
-using MusicDownloader.Pocos.Youtube;
-using YoutubeReExplode.Playlists;
 using ILogger = Serilog.ILogger;
 
-namespace MusicDownloader.Controllers.Youtube;
+namespace MusicDownloader.Api.Controllers.Youtube;
 
 [Route("youtube/[controller]")]
-public class PlaylistController : ApiControllerBase
+public class PlaylistController : AuthenticatedAnonymousApiController
 {
     private readonly IMediator _mediator;
 

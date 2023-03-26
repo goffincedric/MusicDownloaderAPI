@@ -4,6 +4,9 @@ namespace MusicDownloader.Shared.Constants;
 
 public static class ErrorCodes
 {
+    public static readonly string Unauthorized = "UNAUTHORIZED";
+    public static readonly string Forbidden = "FORBIDDEN";
+    
     public static class Youtube
     {
         // Classname to use in rest of error codes

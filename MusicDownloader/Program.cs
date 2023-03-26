@@ -12,56 +12,15 @@ try
     await FFMpegConfigurator.ConfigureFFMpeg();
 
     // Create web builder
-    var builder = WebApplication.CreateBuilder(args);
+    var builder = WebApplication
+        .CreateBuilder(args)
+        .ConfigureWebApplicationBuilder();
 
-    // Add serilog functionality
-    builder.Host.UseSerilog();
-
-    // Cors domains
-    const string allowAllOrigins = "AllowAllOrigins";
-    builder.Services.AddCors(options => options.AddPolicy(allowAllOrigins, policy =>
-        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
-    ));
-
-    // Add services to the container.
-    builder.Services.AddHttpClient();
-    builder.Services.AddLibraries();
-    builder.Services.AddBusiness();
-
-    builder.Services.AddRouting(options => { options.LowercaseUrls = true; });
-    builder.Services.AddControllers();
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
-
-    // Build web application
-    var app = builder.Build();
-
-    // Add request logging using serilog
-    app.UseSerilogRequestLogging();
-
-    // Only use swagger in development
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
-
-    // Use cors policy
-    app.UseCors(allowAllOrigins);
-    // Redirect http to https
-    app.UseHttpsRedirection();
-    // Enable authorization middleware
-    app.UseAuthorization();
-
-    // Register custom middlewares
-    app.RegisterCustomMiddlewares();
-
-    // Map controller endpoints
-    app.MapControllers();
-
-    // Run the applications
-    app.Run();
+    // Build, configure and run web application
+    builder
+        .Build()
+        .ConfigureWebApplication()
+        .Run();
 }
 catch (Exception ex)
 {
@@ -74,9 +33,6 @@ finally
 
 /*
  * TODO:
- *  - Filter out livestreams from playlists
- *  - API Key auth
  *  - Filter out 'artist name -' and '- artist name' from song title + trim song title
- *  - Make docker container pull latest changes to stay up-to-date
+ *  - Add option to choose output containers: mp3, opus, aac
  */
-// Linux: sudo apt-get install -y ffmpeg libgdiplus

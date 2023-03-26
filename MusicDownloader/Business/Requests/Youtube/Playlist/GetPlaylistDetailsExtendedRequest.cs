@@ -53,7 +53,7 @@ public class
                     Url = thumbnail.Url,
                     Width = thumbnail.Resolution.Width,
                     Height = thumbnail.Resolution.Height
-                }) // TODO: Put in automapper?
+                })
                 .ToList()
         });
 
