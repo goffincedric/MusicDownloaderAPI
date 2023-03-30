@@ -28,7 +28,7 @@ public class AuthenticationController : AnonymousApiController
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         // Get user and generate JWT token
-        var apiUser = await _mediator.Send(new GetApiUserRequest { UserToken = request.UserToken });
+        var apiUser = await _mediator.Send(new GetApiUserRequest { UserToken = request.ApiToken });
         var accessToken = await _mediator.Send(new GetJwtTokenForUserRequest { User = apiUser });
         return Ok(new AuthResponse { JwtToken = accessToken });
     }
