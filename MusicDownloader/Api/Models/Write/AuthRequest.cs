@@ -5,5 +5,5 @@ namespace MusicDownloader.Api.Models.Write;
 public class AuthRequest
 {
     [Required]
-    public string UserToken { get; set; } = null!;
+    public string ApiToken { get; set; } = null!;
 }

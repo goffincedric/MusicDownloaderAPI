@@ -35,4 +35,5 @@ finally
  * TODO:
  *  - Filter out 'artist name -' and '- artist name' from song title + trim song title
  *  - Add option to choose output containers: mp3, opus, aac
+ *  - DOTNET 8: Add TimeProvider.System as singleton to DI Container and use it everywhere instead of DateTime class
  */
