@@ -9,7 +9,9 @@ using MusicDownloader.Business.Requests.Music.Download;
 using MusicDownloader.Business.Requests.Youtube.Video;
 using MusicDownloader.Business.Strategies.MetadataMapping;
 using MusicDownloader.Business.Strategies.MusicDownload;
+using MusicDownloader.Business.Strategies.Transcoding;
 using MusicDownloader.Shared.Constants;
+using MusicDownloader.Shared.Edxceptions;
 using ILogger = Serilog.ILogger;
 
 namespace MusicDownloader.Api.Controllers.Youtube;
@@ -39,20 +41,28 @@ public class VideoController : AuthenticatedAnonymousApiController
         return Ok(video);
     }
 
-    [HttpGet("download")]
-    [Produces($"audio/{YoutubeConstants.Container}")]
+    [HttpGet("download/{container}")]
+    [Produces(
+        $"audio/{ContainerConstants.Containers.Ogg}",
+        $"audio/{ContainerConstants.Containers.Mp3}",
+        $"audio/{ContainerConstants.Containers.Opus}",
+        $"audio/{ContainerConstants.Containers.Aac}"
+    )]
     [ProducesResponseType(typeof(FileStreamResult), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> DownloadVideo([FromQuery(Name = "url")] string url)
+    public async Task<IActionResult> DownloadVideo([FromQuery(Name = "url")] string url, [FromRoute] string container)
     {
         // Validate
         if (string.IsNullOrWhiteSpace(url)) return BadRequest();
+        // Check if container is supported youtube container
+        if (!YoutubeConstants.SupportedContainers.Any(supportedContainer => supportedContainer.Name.Equals(container)))
+            throw new MusicDownloaderException($"Unsupported container: {container}", ErrorCodes.UnsupportedAudioContainer, HttpStatusCode.BadRequest);
 
         // Download audio using youtube strategy
         var videoStream = await _mediator.Send(new DownloadAudioRequest
         {
             Url = url,
+            Container = container,
             DownloadStrategy = new YoutubeDownloadStrategy(_mediator),
-            MetadataMapperStrategy = new VorbisMetadataMapper()
         });
 
         // Set response headers to correctly reflect stream contents and return stream as file
