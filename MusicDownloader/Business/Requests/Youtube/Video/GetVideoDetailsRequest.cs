@@ -6,8 +6,8 @@ namespace MusicDownloader.Business.Requests.Youtube.Video;
 
 public class GetVideoDetailsRequest : IRequest<TrackDetails>
 {
-    public string Url { get; set; }
-    public PlaylistDetailsExtended? PlaylistDetails { get; set; }
+    public string Url { get; init; }
+    public PlaylistDetailsExtended? PlaylistDetails { get; init; }
 }
 
 public class GetVideoDetailsRequestHandler : IRequestHandler<GetVideoDetailsRequest, TrackDetails>

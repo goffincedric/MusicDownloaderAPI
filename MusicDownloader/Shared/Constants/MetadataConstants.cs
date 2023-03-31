@@ -2,6 +2,10 @@
 
 public static class MetadataConstants
 {
+    /*
+     * https://exiftool.org/TagNames/
+     */
+    
     public static class VorbisTags
     {
         /**
@@ -39,5 +43,15 @@ public static class MetadataConstants
         public const string TrackNumber = "tracknumber";
         public const string Version = "version";
         public const string Vendor = "vendor";
+    }
+    public static class ID3v2_4Tags
+    {
+        /**
+         * Source: https://exiftool.org/TagNames/ID3.html#v2_4
+         */
+        public const string Album = "TALB";
+        public const string Artist = "TPE1";
+        public const string Title = "TIT2";
+        public const string TrackNumber = "TRCK";
     }
 }
