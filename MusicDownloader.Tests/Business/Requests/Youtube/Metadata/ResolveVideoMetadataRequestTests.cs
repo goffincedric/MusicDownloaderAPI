@@ -1,5 +1,7 @@
 ﻿using FFMpegCore.Builders.MetaData;
+using MusicDownloader.Business.Requests.Music.Metadata;
 using MusicDownloader.Business.Requests.Youtube.Metadata;
+using MusicDownloader.Business.Requests.Youtube.Video;
 using MusicDownloader.Shared.Constants;
 using MusicDownloader.Tests.TestData.ResolveVideoMetadataRequest;
 using YoutubeReExplode;
@@ -22,12 +24,15 @@ public class ResolveVideoMetadataRequestTests
     )
     {
         // Arrange
-        var resolvedVideo = await _youtubeClient.Videos.GetAsync(url);
-        var request = new ResolveVideoMetadataRequest
+        var trackDetails = await new GetVideoDetailsRequestHandler(_youtubeClient).Handle(new GetVideoDetailsRequest
         {
-            Video = resolvedVideo
+            Url = url
+        }, CancellationToken.None);
+        var request = new ResolveMusicMetadataRequest
+        {
+            TrackDetails = trackDetails
         };
-        var sut = new ResolveVideoMetadataRequestHandler();
+        var sut = new ResolveMusicMetadataRequestHandler();
 
         // Act
         var result = await sut.Handle(request, CancellationToken.None);
