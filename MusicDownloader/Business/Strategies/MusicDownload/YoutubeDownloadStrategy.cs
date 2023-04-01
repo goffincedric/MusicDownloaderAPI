@@ -38,4 +38,7 @@ public class YoutubeDownloadStrategy : MusicDownloadStrategy
 
     protected override Task<Stream> GetAudioStream(string url, CancellationToken cancellationToken = default) =>
         Mediator.Send(new GetAudioStreamRequest { Url = url }, cancellationToken);
+
+    protected override Task<string> GetAudioUrl(string url, CancellationToken cancellationToken = default) =>
+        Mediator.Send(new GetAudioUrlRequest { Url = url }, cancellationToken);
 }

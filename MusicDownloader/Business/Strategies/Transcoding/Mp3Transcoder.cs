@@ -1,5 +1,4 @@
-﻿using FFMpegCore;
-using FFMpegCore.Enums;
+using FFMpegCore;
 using FFMpegCore.Pipes;
 using MusicDownloader.Business.Strategies.MetadataMapping;
 using MusicDownloader.Business.Strategies.Transcoding._base;
@@ -19,7 +18,7 @@ public class Mp3Transcoder : TranscoderStrategy
     {
     }
 
-    public override async Task<MusicStream> Execute(Task<Stream> audioStreamTask, Task<Stream?> coverArtStreamTask,
+    public override async Task<MusicStream> Execute(string audioUrl, Task<Stream?> coverArtStreamTask,
         Task<TrackMetadata> trackMetadataTask)
     {
         // Map metadata to vorbis tag system and set filename
@@ -27,9 +26,8 @@ public class Mp3Transcoder : TranscoderStrategy
         var metadata = MetadataMapper.Execute(trackMetadata);
         var fileName = $"{trackMetadata.Title.ToSafeFilename()}.{Container.Name}";
 
-
         // Pipe in audio stream and cover art as video stream if available
-        var transcodeBuilder = FFMpegArguments.FromPipeInput(new StreamPipeSource(await audioStreamTask));
+        var transcodeBuilder = FFMpegArguments.FromUrlInput(new Uri(audioUrl));
         var coverArt = await coverArtStreamTask; // TODO: Fix cover art for mp3 not working
         if (coverArt != null)
             transcodeBuilder = transcodeBuilder.AddPipeInput(new StreamPipeSource(coverArt));
