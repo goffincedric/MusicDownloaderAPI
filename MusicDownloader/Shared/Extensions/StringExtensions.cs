@@ -18,7 +18,7 @@ public static class StringExtensions
         var sanitizedFileName = s.ToCharArray();
         for (var i = 0; i < sanitizedFileName.Length; i++)
         {
-            if (UNSAFE_FILENAME_CHARS.Contains(sanitizedFileName[1])) sanitizedFileName[i] = '_';
+            if (UNSAFE_FILENAME_CHARS.Contains(sanitizedFileName[i])) sanitizedFileName[i] = '_';
         }
 
         return new string(sanitizedFileName);
