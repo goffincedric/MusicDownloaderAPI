@@ -15,6 +15,6 @@ public abstract class TranscoderStrategy : ITranscoderStrategy
         MetadataMapper = metadataMapper;
     }
 
-    public abstract Task<MusicStream> Execute(Task<Stream> audioStreamTask, Task<Stream?> coverArtStreamTask,
+    public abstract Task<MusicStream> Execute(string audioUrl, Task<Stream?> coverArtStreamTask,
         Task<TrackMetadata> trackMetadataTask);
 }
