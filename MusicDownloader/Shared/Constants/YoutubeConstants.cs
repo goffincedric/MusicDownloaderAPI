@@ -8,7 +8,7 @@ public abstract class YoutubeConstants
     public static readonly TimeSpan MaxAllowedDownloadDuration = new(1, 0, 0);
     public static readonly int MinRequiredCoverResolution = 600 * 600;
 
-    public const AudioQuality AudioQuality = FFMpegCore.Enums.AudioQuality.Ultra;
+    public const AudioQuality AudioQuality = FFMpegCore.Enums.AudioQuality.VeryHigh;
     public const int SamplingRate = 48000;
     public const int CoverFramerate = 1;
 

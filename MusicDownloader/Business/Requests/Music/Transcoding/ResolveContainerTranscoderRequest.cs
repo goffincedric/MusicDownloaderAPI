@@ -3,7 +3,7 @@ using MediatR;
 using MusicDownloader.Business.Strategies.Transcoding;
 using MusicDownloader.Business.Strategies.Transcoding._base;
 using MusicDownloader.Shared.Constants;
-using MusicDownloader.Shared.Edxceptions;
+using MusicDownloader.Shared.Exceptions;
 
 namespace MusicDownloader.Business.Requests.Music.Transcoding;
 

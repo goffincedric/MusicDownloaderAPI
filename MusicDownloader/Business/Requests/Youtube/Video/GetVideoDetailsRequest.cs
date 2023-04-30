@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using MusicDownloader.Business.Models;
 using YoutubeReExplode;
 
@@ -24,7 +24,7 @@ public class GetVideoDetailsRequestHandler : IRequestHandler<GetVideoDetailsRequ
         // Get playlist and videos
         var videoDetails = await _youtube.Videos.GetAsync(request.Url, cancellationToken);
 
-        // map author name 
+        // Map author name 
         var authorName =
             videoDetails.Author.ChannelName ??
             request.PlaylistDetails?.AuthorName ??

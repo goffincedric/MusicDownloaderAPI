@@ -3,7 +3,7 @@ using System.Security.Authentication;
 using AutoMapper;
 using MusicDownloader.Api.Models;
 using MusicDownloader.Shared.Constants;
-using MusicDownloader.Shared.Edxceptions;
+using MusicDownloader.Shared.Exceptions;
 
 namespace MusicDownloader.Api.Profiles;
 
