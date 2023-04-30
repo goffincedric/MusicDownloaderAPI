@@ -11,7 +11,7 @@ using MusicDownloader.Business.Strategies.MetadataMapping;
 using MusicDownloader.Business.Strategies.MusicDownload;
 using MusicDownloader.Business.Strategies.Transcoding;
 using MusicDownloader.Shared.Constants;
-using MusicDownloader.Shared.Edxceptions;
+using MusicDownloader.Shared.Exceptions;
 using ILogger = Serilog.ILogger;
 
 namespace MusicDownloader.Api.Controllers.Youtube;

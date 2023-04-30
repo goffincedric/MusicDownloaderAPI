@@ -4,7 +4,7 @@ using MusicDownloader.Business.Models;
 using MusicDownloader.Business.Requests.Youtube.Video;
 using MusicDownloader.Business.Strategies.MusicDownload._base;
 using MusicDownloader.Shared.Constants;
-using MusicDownloader.Shared.Edxceptions;
+using MusicDownloader.Shared.Exceptions;
 
 namespace MusicDownloader.Business.Strategies.MusicDownload;
 

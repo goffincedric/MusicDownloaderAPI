@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace MusicDownloader.Shared.Edxceptions;
+namespace MusicDownloader.Shared.Exceptions;
 
 public class MusicDownloaderException : ApplicationException
 {
