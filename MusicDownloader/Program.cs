@@ -34,6 +34,8 @@ finally
 /*
  * TODO:
  *  - Filter out 'artist name -' and '- artist name' from song title + trim song title
- *  - Add option to choose output containers: mp3, opus, aac
+ *  - Add option to choose output containers: opus, aac
+ *  - Fix cover art in mp3
+ *  - Add podcast mode, that doesn't use music details and uses lower audio quality (128)
  *  - DOTNET 8: Add TimeProvider.System as singleton to DI Container and use it everywhere instead of DateTime class
  */
