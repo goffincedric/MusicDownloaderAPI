@@ -1,6 +1,5 @@
 ﻿using FFMpegCore.Builders.MetaData;
 using MusicDownloader.Business.Requests.Music.Metadata;
-using MusicDownloader.Business.Requests.Youtube.Metadata;
 using MusicDownloader.Business.Requests.Youtube.Video;
 using MusicDownloader.Shared.Constants;
 using MusicDownloader.Tests.TestData.ResolveVideoMetadataRequest;

@@ -19,7 +19,7 @@
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
         <PackageReference Include="Xabe.FFmpeg.Downloader" Version="5.2.6" />
-        <PackageReference Include="YoutubeReExplode" Version="7.0.5" />
+        <PackageReference Include="YoutubeReExplode" Version="7.0.7" />
     </ItemGroup>
 
     <ItemGroup>
