@@ -14,7 +14,7 @@ public interface IMusicDownloadStrategy
     /// <returns>A wrapper containing streamed music, along with some file metadata</returns>
     Task<MusicStream> Execute(
         string url,
-        ITranscoderStrategy transcoderStrategy,
+        TranscoderStrategy transcoderStrategy,
         CancellationToken cancellationToken = default
     );
 }

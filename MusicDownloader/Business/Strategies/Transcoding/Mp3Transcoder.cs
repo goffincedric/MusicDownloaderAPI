@@ -1,34 +1,36 @@
 using FFMpegCore;
 using FFMpegCore.Pipes;
 using MusicDownloader.Business.Strategies.MetadataMapping;
+using MusicDownloader.Business.Strategies.MetadataMapping._base;
 using MusicDownloader.Business.Strategies.Transcoding._base;
 using MusicDownloader.Pocos.Youtube;
 using MusicDownloader.Shared.Constants;
 using MusicDownloader.Shared.Extensions;
+using YoutubeReExplode.Videos.Streams;
 
 namespace MusicDownloader.Business.Strategies.Transcoding;
 
 public class Mp3Transcoder : TranscoderStrategy
 {
-    public Mp3Transcoder() : base(
-        YoutubeConstants.SupportedContainers.First(
-            container => container.Name.Equals(ContainerConstants.Containers.Mp3)),
-        new ID3MetadataMapper()
-    )
+    private readonly Container _container;
+    private readonly IMetadataMapperStrategy _metadataMapper;
+    
+    public Mp3Transcoder(): base(true, true)
     {
+        _container = YoutubeConstants.SupportedContainers.First(container => container.Name.Equals(ContainerConstants.Containers.Mp3));
+        _metadataMapper = new ID3MetadataMapper();
     }
 
-    public override async Task<MusicStream> Execute(string audioUrl, Task<Stream?> coverArtStreamTask,
-        Task<TrackMetadata> trackMetadataTask)
+    public override async Task<MusicStream> Execute(string audioUrl, CancellationToken cancellationToken)
     {
         // Map metadata to vorbis tag system and set filename
-        var trackMetadata = await trackMetadataTask;
-        var metadata = MetadataMapper.Execute(trackMetadata);
-        var fileName = $"{trackMetadata.Title.ToSafeFilename()}.{Container.Name}";
+        var trackMetadata = await TrackMetadataTask;
+        var metadata = _metadataMapper.Execute(trackMetadata);
+        var fileName = $"{trackMetadata.Title.ToSafeFilename()}.{_container.Name}";
 
         // Pipe in audio stream and cover art as video stream if available
         var transcodeBuilder = FFMpegArguments.FromUrlInput(new Uri(audioUrl));
-        var coverArt = await coverArtStreamTask; // TODO: Fix cover art for mp3 not working
+        var coverArt = await CoverArtStreamTask; // TODO: Fix cover art for mp3 not working
         if (coverArt != null)
             transcodeBuilder = transcodeBuilder.AddPipeInput(new StreamPipeSource(coverArt));
 
@@ -50,6 +52,10 @@ public class Mp3Transcoder : TranscoderStrategy
         // Reset stream position
         memoryStream.Position = 0;
 
-        return new MusicStream { Stream = memoryStream, FileName = fileName, Container = Container.Name };
+        return new MusicStream
+        {
+            Stream = memoryStream, FileName = fileName, Container = _container.Name, ContentType =
+                $"audio/{_container.Name}"
+        };
     }
 }

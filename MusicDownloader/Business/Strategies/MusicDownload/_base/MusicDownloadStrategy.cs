@@ -18,7 +18,7 @@ public abstract class MusicDownloadStrategy : IMusicDownloadStrategy
     
     public async Task<MusicStream> Execute(
         string url,
-        ITranscoderStrategy transcoderStrategy,
+        TranscoderStrategy transcoderStrategy,
         CancellationToken cancellationToken = default
     )
     {
@@ -33,13 +33,21 @@ public abstract class MusicDownloadStrategy : IMusicDownloadStrategy
 
         // Get the required assets for transcoding
         var audioUrl = await GetAudioUrl(url, cancellationToken);
-        var coverArtStreamTask = GetCoverArtStream(
-            trackDetails.Thumbnails, playlistDetailsExtended?.Thumbnails, cancellationToken
-        );
-        var metadataTask = GetMetadata(trackDetails, playlistDetailsExtended, cancellationToken);
+        if (transcoderStrategy.RequiresCoverArtStream)
+        {
+            var coverArtStreamTask = GetCoverArtStream(
+                trackDetails.Thumbnails, playlistDetailsExtended?.Thumbnails, cancellationToken
+            );
+            transcoderStrategy.SetCoverArtStream(coverArtStreamTask);
+        }
+        if (transcoderStrategy.RequiresTrackMetadata)
+        {
+            var metadataTask = GetMetadata(trackDetails, playlistDetailsExtended, cancellationToken);
+            transcoderStrategy.SetTrackMetadataStream(metadataTask);
+        }
 
         // Transcode audio assets
-        return await transcoderStrategy.Execute(audioUrl, coverArtStreamTask, metadataTask);
+        return await transcoderStrategy.Execute(audioUrl, cancellationToken);
     }
 
     #region Overridable methods for strategies

@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using MusicDownloader.Business.Requests.Music.Transcoding;
-using MusicDownloader.Business.Strategies.MetadataMapping._base;
 using MusicDownloader.Business.Strategies.MusicDownload._base;
-using MusicDownloader.Business.Strategies.Transcoding._base;
 using MusicDownloader.Pocos.Youtube;
 
 namespace MusicDownloader.Business.Requests.Music.Download;

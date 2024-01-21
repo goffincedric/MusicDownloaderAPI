@@ -41,7 +41,7 @@ public class VideoController : AuthenticatedAnonymousApiController
         return Ok(video);
     }
 
-    [HttpGet("download/{container}")]
+    [HttpGet("download")]
     [Produces(
         $"audio/{ContainerConstants.Containers.Ogg}",
         $"audio/{ContainerConstants.Containers.Mp3}",
@@ -49,19 +49,20 @@ public class VideoController : AuthenticatedAnonymousApiController
         $"audio/{ContainerConstants.Containers.Aac}"
     )]
     [ProducesResponseType(typeof(FileStreamResult), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> DownloadVideo([FromQuery(Name = "url")] string url, [FromRoute] string container)
+    public async Task<IActionResult> DownloadVideo([FromQuery(Name = "url")] string url, [FromQuery(Name = "container")] string? container)
     {
         // Validate
         if (string.IsNullOrWhiteSpace(url)) return BadRequest();
         // Check if container is supported youtube container
-        if (!YoutubeConstants.SupportedContainers.Any(supportedContainer => supportedContainer.Name.Equals(container)))
+        if (!string.IsNullOrWhiteSpace(container) && !YoutubeConstants.SupportedContainers.Any(supportedContainer => supportedContainer.Name.Equals(container)))
             throw new MusicDownloaderException($"Unsupported container: {container}", ErrorCodes.UnsupportedAudioContainer, HttpStatusCode.BadRequest);
-
+        var transcodedContainer = string.IsNullOrWhiteSpace(container) ? ContainerConstants.Containers.Default : container;
+        
         // Download audio using youtube strategy
         var videoStream = await _mediator.Send(new DownloadAudioRequest
         {
             Url = url,
-            Container = container,
+            Container = transcodedContainer,
             DownloadStrategy = new YoutubeDownloadStrategy(_mediator),
         });
 

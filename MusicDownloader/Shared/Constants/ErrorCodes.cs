@@ -18,5 +18,7 @@ public static class ErrorCodes
         // Error codes        
         public static readonly string LivestreamDownloadNotAllowed = $"{ClassName}_LIVESTREAM_DOWNLOAD_NOT_ALLOWED";
         public static readonly string LongVideoDownloadNotAllowed = $"{ClassName}_LONG_VIDEO_DOWNLOAD_NOT_ALLOWED";
+        
+        public static readonly string MimeTypeNotInDownloadUrl = $"{ClassName}_MIME_TYPE_NOT_IN_DOWNLOAD_URL";
     }
 }
