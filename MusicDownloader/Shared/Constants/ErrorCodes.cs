@@ -8,6 +8,7 @@ public static class ErrorCodes
     public static readonly string Forbidden = "FORBIDDEN";
 
     public static readonly string UnsupportedAudioContainer = "UNSUPPORTED_AUDIO_CONTAINER";
+    public static readonly string UnmappedMimeType = "UNMAPPED_MIME_TYPE";
 
     public static class Youtube
     {

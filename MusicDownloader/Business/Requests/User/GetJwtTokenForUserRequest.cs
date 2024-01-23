@@ -9,17 +9,11 @@ public class GetJwtTokenForUserRequest : IRequest<string>
     public ApiUser User { get; set; }
 }
 
-public class GetJwtTokenForUserRequestHandler : IRequestHandler<GetJwtTokenForUserRequest, string>
+public class GetJwtTokenForUserRequestHandler(JwtTokenGenerator tokenGenerator)
+    : IRequestHandler<GetJwtTokenForUserRequest, string>
 {
-    private readonly JwtTokenGenerator _tokenGenerator;
-
-    public GetJwtTokenForUserRequestHandler(JwtTokenGenerator tokenGenerator)
-    {
-        _tokenGenerator = tokenGenerator;
-    }
-
     public Task<string> Handle(GetJwtTokenForUserRequest request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(_tokenGenerator.CreateToken(request.User));
+        return Task.FromResult(tokenGenerator.CreateToken(request.User));
     }
 }
