@@ -9,9 +9,9 @@ public static class MimeTypeUtils
     private static readonly Dictionary<string, string> MimeTypeMapping = new(StringComparer.OrdinalIgnoreCase)
     {
         // MP3
+        { "audio/mp3", ContainerConstants.Containers.Mp3 },
         { "audio/mpeg", ContainerConstants.Containers.Mp3 },
         { "audio/mpeg3", ContainerConstants.Containers.Mp3 },
-        { "audio/mp3", ContainerConstants.Containers.Mp3 },
         // Webm
         { "audio/webm", ContainerConstants.Containers.Webm },
         { "audio/weba", ContainerConstants.Containers.Webm },
@@ -33,5 +33,17 @@ public static class MimeTypeUtils
         if (!string.IsNullOrEmpty(extension)) return extension;
         // Else, throw error
         throw new MusicDownloaderException($"Unmapped mime type: {mimeType}", ErrorCodes.UnmappedMimeType, HttpStatusCode.InternalServerError);
+    }
+
+    public static string MapExtensionToMimeType(string fileExtension)
+    {
+        // First try our own mapping
+        var pair = MimeTypeMapping.FirstOrDefault(pair => pair.Value.Equals(fileExtension, StringComparison.InvariantCultureIgnoreCase));
+        if (!string.IsNullOrEmpty(pair.Key)) return pair.Key;
+        // Next try mime types mapping
+        var extension = MimeTypes.GetMimeType($"dummyFileName.{fileExtension}");
+        if (!string.IsNullOrEmpty(extension)) return extension;
+        // Else, throw error
+        throw new MusicDownloaderException($"Unmapped file extension: {fileExtension}", ErrorCodes.UnmappedFileExtension, HttpStatusCode.InternalServerError);
     }
 }

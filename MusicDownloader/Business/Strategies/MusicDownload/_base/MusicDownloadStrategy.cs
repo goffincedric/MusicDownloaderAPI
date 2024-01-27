@@ -1,29 +1,28 @@
-﻿using MediatR;
+﻿using System.Net;
+using MediatR;
+using Microsoft.AspNetCore.WebUtilities;
 using MusicDownloader.Business.Models;
 using MusicDownloader.Business.Requests.Music.Metadata;
 using MusicDownloader.Business.Requests.Youtube.Download;
 using MusicDownloader.Business.Strategies.Transcoding._base;
 using MusicDownloader.Pocos.Youtube;
+using MusicDownloader.Shared.Constants;
+using MusicDownloader.Shared.Exceptions;
+using MusicDownloader.Shared.Extensions;
+using MusicDownloader.Shared.Utils;
 
 namespace MusicDownloader.Business.Strategies.MusicDownload._base;
 
-public abstract class MusicDownloadStrategy : IMusicDownloadStrategy
+public abstract class MusicDownloadStrategy(IMediator mediator) : IMusicDownloadStrategy
 {
-    protected readonly IMediator Mediator;
-
-    protected MusicDownloadStrategy(IMediator mediator)
-    {
-        Mediator = mediator;
-    }
-    
     public async Task<MusicStream> Execute(
         string url,
-        TranscoderStrategy transcoderStrategy,
+        TranscoderStrategy? transcoderStrategy = null,
         CancellationToken cancellationToken = default
     )
     {
         // Get music details and validate them
-        var downloadDetails = await Mediator.Send(new GetDownloadRequestDetailsRequest
+        var downloadDetails = await mediator.Send(new GetDownloadRequestDetailsRequest
         {
             Url = url
         }, cancellationToken);
@@ -32,22 +31,35 @@ public abstract class MusicDownloadStrategy : IMusicDownloadStrategy
         Validate(trackDetails, playlistDetailsExtended, cancellationToken);
 
         // Get the required assets for transcoding
-        var audioUrl = await GetAudioUrl(url, cancellationToken);
-        if (transcoderStrategy.RequiresCoverArtStream)
+        var trackMetadata = await GetMetadata(trackDetails, playlistDetailsExtended, cancellationToken);
+        if (transcoderStrategy?.RequiresTrackMetadata() == true) transcoderStrategy.SetTrackMetadata(trackMetadata);
+        if (transcoderStrategy?.RequiresCoverArtStream() == true)
         {
             var coverArtStreamTask = GetCoverArtStream(
                 trackDetails.Thumbnails, playlistDetailsExtended?.Thumbnails, cancellationToken
             );
             transcoderStrategy.SetCoverArtStream(coverArtStreamTask);
         }
-        if (transcoderStrategy.RequiresTrackMetadata)
+
+        // Get audio assets and transcode if necessary
+        DownloadStreamInfo downloadStreamInfo;
+        if (transcoderStrategy is null)
         {
-            var metadataTask = GetMetadata(trackDetails, playlistDetailsExtended, cancellationToken);
-            transcoderStrategy.SetTrackMetadataStream(metadataTask);
+            downloadStreamInfo = await GetAudioStream(url, cancellationToken);
+        }
+        else
+        {
+            var audioUrl = await GetAudioUrl(url, cancellationToken);
+            downloadStreamInfo = await transcoderStrategy.Execute(audioUrl, cancellationToken);
         }
 
-        // Transcode audio assets
-        return await transcoderStrategy.Execute(audioUrl, cancellationToken);
+        // Return stream along with container info
+        return new MusicStream
+        {
+            Stream = downloadStreamInfo.Stream, 
+            FileName = GetFileName(trackMetadata, downloadStreamInfo.Container),
+            MimeType = GetMimeType(downloadStreamInfo.Container)
+        };
     }
 
     #region Overridable methods for strategies
@@ -58,16 +70,20 @@ public abstract class MusicDownloadStrategy : IMusicDownloadStrategy
         CancellationToken cancellationToken = default
     );
 
-    protected abstract Task<Stream> GetAudioStream(string url, CancellationToken cancellationToken = default);
+    protected abstract Task<DownloadStreamInfo> GetAudioStream(string url,
+        CancellationToken cancellationToken = default);
+
     protected abstract Task<string> GetAudioUrl(string url, CancellationToken cancellationToken = default);
 
     #endregion
+
+    #region Private utility methods
 
     private Task<TrackMetadata> GetMetadata(
         TrackDetails trackDetails,
         PlaylistDetailsExtended? playlistDetailsExtended,
         CancellationToken cancellationToken = default
-    ) => Mediator.Send(new ResolveMusicMetadataRequest
+    ) => mediator.Send(new ResolveMusicMetadataRequest
     {
         TrackDetails = trackDetails,
         PlaylistDetails = playlistDetailsExtended
@@ -77,9 +93,16 @@ public abstract class MusicDownloadStrategy : IMusicDownloadStrategy
         List<ThumbnailDetails> trackThumbnails,
         List<ThumbnailDetails>? playlistThumbnails = null,
         CancellationToken cancellationToken = default
-    ) => Mediator.Send(new ResolveMusicCoverImageRequest
+    ) => mediator.Send(new ResolveMusicCoverImageRequest
     {
         TrackThumbnails = trackThumbnails,
         PlaylistThumbnails = playlistThumbnails
     }, cancellationToken);
+
+    private static string GetFileName(TrackMetadata trackMetadata, string fileExtension) =>
+        $"{trackMetadata.Title.ToSafeFilename()}.{fileExtension}";
+
+    private static string GetMimeType(string fileExtension) => MimeTypeUtils.MapExtensionToMimeType(fileExtension);
+
+    #endregion
 }

@@ -1,38 +1,39 @@
+using System.Net;
 using FFMpegCore;
 using FFMpegCore.Pipes;
+using Microsoft.AspNetCore.WebUtilities;
+using MusicDownloader.Business.Models;
 using MusicDownloader.Business.Strategies.MetadataMapping;
 using MusicDownloader.Business.Strategies.MetadataMapping._base;
 using MusicDownloader.Business.Strategies.Transcoding._base;
-using MusicDownloader.Pocos.Youtube;
 using MusicDownloader.Shared.Constants;
-using MusicDownloader.Shared.Extensions;
-using YoutubeReExplode.Videos.Streams;
+using MusicDownloader.Shared.Exceptions;
+using MusicDownloader.Shared.Utils;
 
 namespace MusicDownloader.Business.Strategies.Transcoding;
 
-public class Mp3Transcoder : TranscoderStrategy
+public class Mp3Transcoder() : TranscoderStrategy(true, true)
 {
-    private readonly Container _container;
-    private readonly IMetadataMapperStrategy _metadataMapper;
-    
-    public Mp3Transcoder(): base(true, true)
-    {
-        _container = YoutubeConstants.SupportedContainers.First(container => container.Name.Equals(ContainerConstants.Containers.Mp3));
-        _metadataMapper = new ID3MetadataMapper();
-    }
+    private const string TargetContainer = ContainerConstants.Containers.Mp3;
+    private readonly IMetadataMapperStrategy _metadataMapper = new ID3MetadataMapper();
 
-    public override async Task<MusicStream> Execute(string audioUrl, CancellationToken cancellationToken)
+    public override async Task<DownloadStreamInfo> Execute(string audioUrl, CancellationToken cancellationToken)
     {
         // Map metadata to vorbis tag system and set filename
-        var trackMetadata = await TrackMetadataTask;
-        var metadata = _metadataMapper.Execute(trackMetadata);
-        var fileName = $"{trackMetadata.Title.ToSafeFilename()}.{_container.Name}";
+        var metadata = _metadataMapper.Execute(TrackMetadata);
 
         // Pipe in audio stream and cover art as video stream if available
         var transcodeBuilder = FFMpegArguments.FromUrlInput(new Uri(audioUrl));
         var coverArt = await CoverArtStreamTask; // TODO: Fix cover art for mp3 not working
         if (coverArt != null)
             transcodeBuilder = transcodeBuilder.AddPipeInput(new StreamPipeSource(coverArt));
+        
+        // Get file extension from download url
+        var foundMimeType = QueryHelpers.ParseQuery(new Uri(audioUrl).Query).TryGetValue("mime", out var mimeType);
+        if (!foundMimeType)
+            throw new MusicDownloaderException("Couldn't parse mimetype from download url",
+                ErrorCodes.Youtube.MimeTypeNotInDownloadUrl, HttpStatusCode.InternalServerError);
+        var extension = MimeTypeUtils.MapMimeTypeToExtension(mimeType.ToString());
 
         // Add metadata, configure FFMpeg and start transcoding asynchronously
         var memoryStream = new MemoryStream();
@@ -42,7 +43,7 @@ public class Mp3Transcoder : TranscoderStrategy
                 options => options
                     // Doesn't work currently: https://github.com/rosenbjerg/FFMpegCore/issues/429
                     // .WithCustomArgument("-c copy -map 0 -map 1")
-                    .ForceFormat("mp3")
+                    .ForceFormat(TargetContainer)
                     .WithAudioBitrate(YoutubeConstants.AudioQuality)
                     .WithAudioSamplingRate(YoutubeConstants.SamplingRate)
                     .UsingMultithreading(true)
@@ -52,10 +53,7 @@ public class Mp3Transcoder : TranscoderStrategy
         // Reset stream position
         memoryStream.Position = 0;
 
-        return new MusicStream
-        {
-            Stream = memoryStream, FileName = fileName, Container = _container.Name, ContentType =
-                $"audio/{_container.Name}"
-        };
+        // Construct downloaded stream info and return
+        return new DownloadStreamInfo(memoryStream, TargetContainer);
     }
 }

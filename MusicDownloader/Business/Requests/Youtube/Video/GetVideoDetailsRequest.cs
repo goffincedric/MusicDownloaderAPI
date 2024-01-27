@@ -10,19 +10,13 @@ public class GetVideoDetailsRequest : IRequest<TrackDetails>
     public PlaylistDetailsExtended? PlaylistDetails { get; init; }
 }
 
-public class GetVideoDetailsRequestHandler : IRequestHandler<GetVideoDetailsRequest, TrackDetails>
+public class GetVideoDetailsRequestHandler(YoutubeClient youtube)
+    : IRequestHandler<GetVideoDetailsRequest, TrackDetails>
 {
-    private readonly YoutubeClient _youtube;
-
-    public GetVideoDetailsRequestHandler(YoutubeClient youtube)
-    {
-        _youtube = youtube;
-    }
-
     public async Task<TrackDetails> Handle(GetVideoDetailsRequest request, CancellationToken cancellationToken)
     {
         // Get playlist and videos
-        var videoDetails = await _youtube.Videos.GetAsync(request.Url, cancellationToken);
+        var videoDetails = await youtube.Videos.GetAsync(request.Url, cancellationToken);
 
         // Map author name 
         var authorName =

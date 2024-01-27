@@ -46,9 +46,11 @@ public class VideoController : AuthenticatedAnonymousApiController
         $"audio/{ContainerConstants.Containers.Ogg}",
         $"audio/{ContainerConstants.Containers.Mp3}",
         $"audio/{ContainerConstants.Containers.Opus}",
-        $"audio/{ContainerConstants.Containers.Aac}"
+        $"audio/{ContainerConstants.Containers.Aac}",
+        $"audio/{ContainerConstants.Containers.Webm}"
     )]
     [ProducesResponseType(typeof(FileStreamResult), (int)HttpStatusCode.OK)]
+    // TODO: Move to controller query models
     public async Task<IActionResult> DownloadVideo([FromQuery(Name = "url")] string url, [FromQuery(Name = "container")] string? container)
     {
         // Validate
@@ -73,6 +75,6 @@ public class VideoController : AuthenticatedAnonymousApiController
             FileName = videoStream.FileName,
             FileNameStar = videoStream.FileName
         }.ToString());
-        return File(videoStream.Stream, $"audio/{videoStream.Container}", true);
+        return File(videoStream.Stream, videoStream.MimeType, true);
     }
 }

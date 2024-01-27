@@ -9,6 +9,7 @@ public static class ErrorCodes
 
     public static readonly string UnsupportedAudioContainer = "UNSUPPORTED_AUDIO_CONTAINER";
     public static readonly string UnmappedMimeType = "UNMAPPED_MIME_TYPE";
+    public static readonly string UnmappedFileExtension = "UNMAPPED_FILE_EXTENSION";
 
     public static class Youtube
     {

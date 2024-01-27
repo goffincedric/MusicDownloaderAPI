@@ -9,12 +9,12 @@ public interface IMusicDownloadStrategy
     /// Executes the general flow that is followed when downloading music from a supported provider.
     /// </summary>
     /// <param name="url">Url linking to the music to download</param>
-    /// <param name="transcoderStrategy">Desired transcoding strategy</param>
+    /// <param name="transcoderStrategy">Optional desired transcoding strategy</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns>A wrapper containing streamed music, along with some file metadata</returns>
     Task<MusicStream> Execute(
         string url,
-        TranscoderStrategy transcoderStrategy,
+        TranscoderStrategy? transcoderStrategy = null,
         CancellationToken cancellationToken = default
     );
 }

@@ -12,19 +12,12 @@ public class DownloadAudioRequest : IRequest<MusicStream>
     public IMusicDownloadStrategy DownloadStrategy { get; init; }
 }
 
-public class DownloadAudioRequestHandler : IRequestHandler<DownloadAudioRequest, MusicStream>
+public class DownloadAudioRequestHandler(IMediator mediator) : IRequestHandler<DownloadAudioRequest, MusicStream>
 {
-    private readonly IMediator _mediator;
-
-    public DownloadAudioRequestHandler(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     public async Task<MusicStream> Handle(DownloadAudioRequest request, CancellationToken cancellationToken)
     {
         // Resolve transcoder strategy from container
-        var transcodingStrategy = await _mediator.Send(new ResolveContainerTranscoderRequest
+        var transcodingStrategy = await mediator.Send(new ResolveContainerTranscoderRequest
             { Container = request.Container }, cancellationToken);
         // Download url and transcode using resolved strategy
         return await request.DownloadStrategy.Execute(request.Url, transcodingStrategy, cancellationToken);

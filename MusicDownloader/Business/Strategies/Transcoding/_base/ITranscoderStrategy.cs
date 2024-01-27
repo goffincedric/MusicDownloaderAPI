@@ -1,11 +1,16 @@
-﻿using MusicDownloader.Pocos.Youtube;
+﻿using MusicDownloader.Business.Models;
+using MusicDownloader.Pocos.Youtube;
 
 namespace MusicDownloader.Business.Strategies.Transcoding._base;
 
 public interface ITranscoderStrategy
 {
+    internal bool RequiresTrackMetadata();
+    internal bool RequiresCoverArtStream();
+    
+    internal void SetTrackMetadata(TrackMetadata trackMetadata);
     internal void SetCoverArtStream(Task<Stream?> coverArtStreamTask);
-    internal void SetTrackMetadataStream(Task<TrackMetadata> trackMetadataTask);
+    
     
     /// <summary>
     /// Executes transcoding processes for supported a supported container.
@@ -13,8 +18,8 @@ public interface ITranscoderStrategy
     /// Source: https://trac.ffmpeg.org/wiki/Encode/HighQualityAudio#AudioencodersFFmpegcanuse
     /// </summary>
     /// <param name="audioUrl">String that contains a url to the audio to transcode</param>
-    /// <returns>An object containing the transcoded audio stream, along with the filename and container</returns>
-    internal Task<MusicStream> Execute(
+    /// <returns>An object containing the transcoded audio stream along with the container name</returns>
+    internal Task<DownloadStreamInfo> Execute(
         string audioUrl,
         CancellationToken cancellationToken
     );
