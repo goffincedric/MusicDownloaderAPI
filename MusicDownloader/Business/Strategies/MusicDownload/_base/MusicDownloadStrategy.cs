@@ -1,13 +1,9 @@
-﻿using System.Net;
-using MediatR;
-using Microsoft.AspNetCore.WebUtilities;
+﻿using MediatR;
 using MusicDownloader.Business.Models;
 using MusicDownloader.Business.Requests.Music.Metadata;
 using MusicDownloader.Business.Requests.Youtube.Download;
 using MusicDownloader.Business.Strategies.Transcoding._base;
 using MusicDownloader.Pocos.Youtube;
-using MusicDownloader.Shared.Constants;
-using MusicDownloader.Shared.Exceptions;
 using MusicDownloader.Shared.Extensions;
 using MusicDownloader.Shared.Utils;
 
@@ -17,7 +13,7 @@ public abstract class MusicDownloadStrategy(IMediator mediator) : IMusicDownload
 {
     public async Task<MusicStream> Execute(
         string url,
-        TranscoderStrategy? transcoderStrategy = null,
+        ITranscoderStrategy? transcoderStrategy = null,
         CancellationToken cancellationToken = default
     )
     {

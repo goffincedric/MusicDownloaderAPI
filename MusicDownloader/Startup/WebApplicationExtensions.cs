@@ -1,5 +1,4 @@
-﻿using DotNetEnv;
-using MusicDownloader.Shared.Constants;
+﻿using MusicDownloader.Shared.Constants;
 using Serilog;
 
 namespace MusicDownloader.Startup;

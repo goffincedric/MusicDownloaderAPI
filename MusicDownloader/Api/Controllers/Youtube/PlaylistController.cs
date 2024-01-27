@@ -1,6 +1,5 @@
 using System.Net;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MusicDownloader.Api.Controllers._base;
 using MusicDownloader.Business.Models;

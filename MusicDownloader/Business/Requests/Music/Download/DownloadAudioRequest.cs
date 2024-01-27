@@ -8,7 +8,7 @@ namespace MusicDownloader.Business.Requests.Music.Download;
 public class DownloadAudioRequest : IRequest<MusicStream>
 {
     public string Url { get; init; }
-    public string Container { get; init; }
+    public string? Container { get; init; }
     public IMusicDownloadStrategy DownloadStrategy { get; init; }
 }
 

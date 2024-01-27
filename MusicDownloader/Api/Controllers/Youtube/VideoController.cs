@@ -1,15 +1,12 @@
 using System.Net;
 using System.Net.Http.Headers;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MusicDownloader.Api.Controllers._base;
 using MusicDownloader.Business.Models;
 using MusicDownloader.Business.Requests.Music.Download;
 using MusicDownloader.Business.Requests.Youtube.Video;
-using MusicDownloader.Business.Strategies.MetadataMapping;
 using MusicDownloader.Business.Strategies.MusicDownload;
-using MusicDownloader.Business.Strategies.Transcoding;
 using MusicDownloader.Shared.Constants;
 using MusicDownloader.Shared.Exceptions;
 using ILogger = Serilog.ILogger;
@@ -58,13 +55,12 @@ public class VideoController : AuthenticatedAnonymousApiController
         // Check if container is supported youtube container
         if (!string.IsNullOrWhiteSpace(container) && !YoutubeConstants.SupportedContainers.Any(supportedContainer => supportedContainer.Name.Equals(container)))
             throw new MusicDownloaderException($"Unsupported container: {container}", ErrorCodes.UnsupportedAudioContainer, HttpStatusCode.BadRequest);
-        var transcodedContainer = string.IsNullOrWhiteSpace(container) ? ContainerConstants.Containers.Default : container;
         
         // Download audio using youtube strategy
         var videoStream = await _mediator.Send(new DownloadAudioRequest
         {
             Url = url,
-            Container = transcodedContainer,
+            Container = container,
             DownloadStrategy = new YoutubeDownloadStrategy(_mediator),
         });
 
