@@ -36,14 +36,12 @@ public class GlobalExceptionHandlingMiddleware(
         // Set response details and send
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = mappedErrorDetails.StatusCode;
-        await context
-            .Response
-            .WriteAsync(
-                JsonSerializer.Serialize(
-                    mappedErrorDetails,
-                    new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-                )
-            );
+        await context.Response.WriteAsync(
+            JsonSerializer.Serialize(
+                mappedErrorDetails,
+                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
+            )
+        );
     }
 }
 

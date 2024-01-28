@@ -16,24 +16,23 @@ public class JwtTokenGenerator(IOptions<JwtOptions> jwtOptions, ILogger logger)
     public string CreateToken(ApiUser user)
     {
         var expiration = DateTimeOffset.UtcNow.AddMinutes(_jwtOptions.Expiration);
-        var token = CreateJwtToken(
-            CreateClaims(user),
-            CreateSigningCredentials(),
-            expiration
-        );
+        var token = CreateJwtToken(CreateClaims(user), CreateSigningCredentials(), expiration);
         var tokenHandler = new JwtSecurityTokenHandler();
         return tokenHandler.WriteToken(token);
     }
 
     private JwtSecurityToken CreateJwtToken(
-        List<Claim> claims, SigningCredentials credentials, DateTimeOffset expiration
-    ) => new(
-        _jwtOptions.Issuer,
-        _jwtOptions.Audience,
-        claims,
-        expires: expiration.UtcDateTime,
-        signingCredentials: credentials
-    );
+        List<Claim> claims,
+        SigningCredentials credentials,
+        DateTimeOffset expiration
+    ) =>
+        new(
+            _jwtOptions.Issuer,
+            _jwtOptions.Audience,
+            claims,
+            expires: expiration.UtcDateTime,
+            signingCredentials: credentials
+        );
 
     private List<Claim> CreateClaims(ApiUser user)
     {
@@ -43,7 +42,10 @@ public class JwtTokenGenerator(IOptions<JwtOptions> jwtOptions, ILogger logger)
             [
                 new Claim(JwtRegisteredClaimNames.Sub, user.Uuid),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
+                new Claim(
+                    JwtRegisteredClaimNames.Iat,
+                    DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()
+                ),
                 new Claim(JwtRegisteredClaimNames.Name, user.Name)
             ];
         }
@@ -57,9 +59,7 @@ public class JwtTokenGenerator(IOptions<JwtOptions> jwtOptions, ILogger logger)
     private SigningCredentials CreateSigningCredentials()
     {
         return new SigningCredentials(
-            new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_jwtOptions.Secret)
-            ),
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret)),
             SecurityAlgorithms.HmacSha256
         );
     }

@@ -32,41 +32,49 @@ public static class DependencyRegistration
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = jwtOptions.Issuer,
                     ValidAudience = jwtOptions.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret))
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtOptions.Secret)
+                    )
                 };
             });
     }
+
     public static void ConfigureSwagger(this IServiceCollection serviceCollection)
     {
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         serviceCollection.AddSwaggerGen(options =>
         {
             // Define JWT Authentication
-            options.AddSecurityDefinition(ApplicationConstants.Jwt.AuthenticationScheme, new OpenApiSecurityScheme
-            {
-                Description = "JWT Authorization header using the Bearer scheme.",
-                Name = ApplicationConstants.Jwt.HeaderName,
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = ApplicationConstants.Jwt.BearerPrefix
-            });
-            // Require JWT Authentication in swagger
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement // Is key-value pair dictionary
-            {
-                // Object initializer
+            options.AddSecurityDefinition(
+                ApplicationConstants.Jwt.AuthenticationScheme,
+                new OpenApiSecurityScheme
                 {
-                    // key-value pair
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = ApplicationConstants.Jwt.AuthenticationScheme
-                        }
-                    },
-                    new List<string>()
+                    Description = "JWT Authorization header using the Bearer scheme.",
+                    Name = ApplicationConstants.Jwt.HeaderName,
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = ApplicationConstants.Jwt.BearerPrefix
                 }
-            });
+            );
+            // Require JWT Authentication in swagger
+            options.AddSecurityRequirement(
+                new OpenApiSecurityRequirement // Is key-value pair dictionary
+                {
+                    // Object initializer
+                    {
+                        // key-value pair
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = ApplicationConstants.Jwt.AuthenticationScheme
+                            }
+                        },
+                        new List<string>()
+                    }
+                }
+            );
         });
     }
 

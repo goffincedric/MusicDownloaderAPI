@@ -3,20 +3,20 @@
 public class TrackDetails
 {
     /// <summary>
-    /// Track identifier 
+    /// Track identifier
     /// </summary>
     public string Id { get; init; }
-    
+
     /// <summary>
-    /// Url of the track 
+    /// Url of the track
     /// </summary>
     public string Url { get; init; }
-    
+
     /// <summary>
     /// Author of the video/audio url
     /// </summary>
     public string AuthorName { get; init; }
-    
+
     /// <summary>
     /// Title of the track
     /// </summary>

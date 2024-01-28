@@ -2,9 +2,7 @@ using MusicDownloader.Startup;
 using Serilog;
 
 // Create basic logging for application startup
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .CreateLogger();
+Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
 
 try
 {
@@ -12,15 +10,10 @@ try
     await FFMpegConfigurator.ConfigureFFMpeg();
 
     // Create web builder
-    var builder = WebApplication
-        .CreateBuilder(args)
-        .ConfigureWebApplicationBuilder();
+    var builder = WebApplication.CreateBuilder(args).ConfigureWebApplicationBuilder();
 
     // Build, configure and run web application
-    builder
-        .Build()
-        .ConfigureWebApplication()
-        .Run();
+    builder.Build().ConfigureWebApplication().Run();
 }
 catch (Exception ex)
 {

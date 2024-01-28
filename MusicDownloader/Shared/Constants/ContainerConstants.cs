@@ -9,7 +9,7 @@ public abstract class ContainerConstants
         public const string Mp3 = "mp3";
         public const string Opus = "opus";
         public const string Aac = "aac";
-        
+
         public const string Webm = "webm";
     }
 }

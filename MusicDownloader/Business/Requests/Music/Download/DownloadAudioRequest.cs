@@ -5,21 +5,30 @@ using MusicDownloader.Pocos.Youtube;
 
 namespace MusicDownloader.Business.Requests.Music.Download;
 
-public class DownloadAudioRequest : IRequest<MusicStream>
-{
-    public string Url { get; init; }
-    public string? Container { get; init; }
-    public IMusicDownloadStrategy DownloadStrategy { get; init; }
-}
+public record DownloadAudioRequest(
+    string Url,
+    string? Container,
+    IMusicDownloadStrategy DownloadStrategy
+) : IRequest<MusicStream>;
 
-public class DownloadAudioRequestHandler(IMediator mediator) : IRequestHandler<DownloadAudioRequest, MusicStream>
+public class DownloadAudioRequestHandler(IMediator mediator)
+    : IRequestHandler<DownloadAudioRequest, MusicStream>
 {
-    public async Task<MusicStream> Handle(DownloadAudioRequest request, CancellationToken cancellationToken)
+    public async Task<MusicStream> Handle(
+        DownloadAudioRequest request,
+        CancellationToken cancellationToken
+    )
     {
         // Resolve transcoder strategy from container
-        var transcodingStrategy = await mediator.Send(new ResolveContainerTranscoderRequest
-            { Container = request.Container }, cancellationToken);
+        var transcodingStrategy = await mediator.Send(
+            new ResolveContainerTranscoderRequest(request.Container),
+            cancellationToken
+        );
         // Download url and transcode using resolved strategy
-        return await request.DownloadStrategy.Execute(request.Url, transcodingStrategy, cancellationToken);
+        return await request.DownloadStrategy.Execute(
+            request.Url,
+            transcodingStrategy,
+            cancellationToken
+        );
     }
 }

@@ -5,23 +5,21 @@ using MusicDownloader.Shared.Constants;
 
 namespace MusicDownloader.Business.Requests.Music.Transcoding;
 
-public class ResolveContainerTranscoderRequest : IRequest<TranscoderStrategy?>
-{
-    public string Container { get; init; }
-}
+public record ResolveContainerTranscoderRequest(string? Container) : IRequest<TranscoderStrategy?>;
 
-public class ResolveContainerTranscoderRequestHandler(IMediator mediator)
+public class ResolveContainerTranscoderRequestHandler()
     : IRequestHandler<ResolveContainerTranscoderRequest, TranscoderStrategy?>
 {
-    private readonly IMediator _mediator = mediator;
-
     public Task<TranscoderStrategy?> Handle(
-        ResolveContainerTranscoderRequest request, CancellationToken cancellationToken
+        ResolveContainerTranscoderRequest request,
+        CancellationToken cancellationToken
     ) =>
-        Task.FromResult<TranscoderStrategy?>(request.Container switch
-        {
-            ContainerConstants.Containers.Mp3 => new Mp3Transcoder(),
-            ContainerConstants.Containers.Ogg => new OggTranscoder(),
-            _ => null,
-        });
+        Task.FromResult<TranscoderStrategy?>(
+            request.Container switch
+            {
+                ContainerConstants.Containers.Mp3 => new Mp3Transcoder(),
+                ContainerConstants.Containers.Ogg => new OggTranscoder(),
+                _ => null,
+            }
+        );
 }

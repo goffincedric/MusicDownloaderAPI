@@ -6,23 +6,29 @@ using MusicDownloader.Shared.Constants;
 
 namespace MusicDownloader.Business.Requests.Music.Metadata;
 
-public class ResolveMusicMetadataRequest : IRequest<TrackMetadata>
-{
-    public TrackDetails TrackDetails { get; set; }
-    public PlaylistDetailsExtended? PlaylistDetails { get; set; }
-}
+public record ResolveMusicMetadataRequest(
+    TrackDetails TrackDetails,
+    PlaylistDetailsExtended? PlaylistDetails
+) : IRequest<TrackMetadata>;
 
-public class ResolveMusicMetadataRequestHandler : IRequestHandler<ResolveMusicMetadataRequest, TrackMetadata>
+public class ResolveMusicMetadataRequestHandler
+    : IRequestHandler<ResolveMusicMetadataRequest, TrackMetadata>
 {
-    public Task<TrackMetadata> Handle(ResolveMusicMetadataRequest request, CancellationToken cancellationToken)
+    public Task<TrackMetadata> Handle(
+        ResolveMusicMetadataRequest request,
+        CancellationToken cancellationToken
+    )
     {
         // Author name
-        var author = request.TrackDetails.MusicDetails?.ArtistNames?.Count > 0
-            ? string.Join(", ", request.TrackDetails.MusicDetails.ArtistNames)
-            : CleanupAuthorName(request.TrackDetails.AuthorName);
+        var author =
+            request.TrackDetails.MusicDetails?.ArtistNames?.Count > 0
+                ? string.Join(", ", request.TrackDetails.MusicDetails.ArtistNames)
+                : CleanupAuthorName(request.TrackDetails.AuthorName);
 
         // Song name
-        var title = request.TrackDetails.MusicDetails?.Song ?? CleanupTitle(request.TrackDetails.Title, author);
+        var title =
+            request.TrackDetails.MusicDetails?.Song
+            ?? CleanupTitle(request.TrackDetails.Title, author);
 
         // Playlist or album name
         var playlist = request.PlaylistDetails?.Title;
@@ -33,19 +39,14 @@ public class ResolveMusicMetadataRequestHandler : IRequestHandler<ResolveMusicMe
         int? trackNumber = null;
         if (request.PlaylistDetails?.Tracks.Count > 0)
         {
-            var index = request.PlaylistDetails.Tracks
-                .FindIndex(track => track.Id == request.TrackDetails.Id);
+            var index = request.PlaylistDetails.Tracks.FindIndex(
+                track => track.Id == request.TrackDetails.Id
+            );
             trackNumber = index + 1;
         }
 
         // Map and return metadata
-        return Task.FromResult(new TrackMetadata
-        {
-            Title = title,
-            Author = author,
-            Album = playlist,
-            TrackNumber = trackNumber,
-        });
+        return Task.FromResult(new TrackMetadata(title, author, playlist, trackNumber));
     }
 
     private static string CleanupAuthorName(string authorName)
@@ -67,8 +68,7 @@ public class ResolveMusicMetadataRequestHandler : IRequestHandler<ResolveMusicMe
     private static string CleanupTitle(string title, string authorName)
     {
         // Cleanup with various song regexes
-        SongRegex.ForEach(keyword =>
-            title = keyword.Replace(title, ""));
+        SongRegex.ForEach(keyword => title = keyword.Replace(title, ""));
         // Cleanup author name from title with different formats
         GetSongAuthorRegexes(authorName).ForEach(regex => title = regex.Replace(title, ""));
         // TODO: Cleanup emoji's from string
@@ -80,18 +80,26 @@ public class ResolveMusicMetadataRequestHandler : IRequestHandler<ResolveMusicMe
 
     #region Regexes
 
-    private static readonly List<Regex> AuthorRegexes = RegexConstants.Youtube.VEVO_REGEXES.Concat(new List<Regex>
-    {
-        new("-\\stopic", RegexOptions.IgnoreCase),
-        new("VEVO$"),
-        new("^VEVO"),
-    }).ToList();
+    private static readonly List<Regex> AuthorRegexes = RegexConstants
+        .Youtube.VevoRegexes.Concat(
+            new List<Regex>
+            {
+                new("-\\stopic", RegexOptions.IgnoreCase),
+                new("VEVO$"),
+                new("^VEVO"),
+            }
+        )
+        .ToList();
 
-    private static readonly List<Regex> SongRegex = RegexConstants.Youtube.VEVO_REGEXES.Concat(new List<Regex>
-    {
-        new("-?\\s?\\([^)]+\\)\\s?-?", RegexOptions.IgnoreCase), // Everything in between brackets
-        new("-?\\s?\\[[^]]+\\]\\s?-?", RegexOptions.IgnoreCase), // Everything in between square brackets
-    }).ToList();
+    private static readonly List<Regex> SongRegex = RegexConstants
+        .Youtube.VevoRegexes.Concat(
+            new List<Regex>
+            {
+                new("-?\\s?\\([^)]+\\)\\s?-?", RegexOptions.IgnoreCase), // Everything in between brackets
+                new("-?\\s?\\[[^]]+\\]\\s?-?", RegexOptions.IgnoreCase), // Everything in between square brackets
+            }
+        )
+        .ToList();
 
     #endregion
 }

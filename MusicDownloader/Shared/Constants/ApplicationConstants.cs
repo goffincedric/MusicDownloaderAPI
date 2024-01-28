@@ -8,7 +8,7 @@ public static class ApplicationConstants
     {
         public const string AllowAllOrigins = "AllowAllOrigins";
     }
-    
+
     public static class Jwt
     {
         public const string AuthenticationScheme = "JWT";

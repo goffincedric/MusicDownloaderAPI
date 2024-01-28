@@ -32,9 +32,13 @@ public class YoutubeDownloadStrategy(IMediator mediator) : MusicDownloadStrategy
             );
     }
 
-    protected override Task<DownloadStreamInfo> GetAudioStream(string url, CancellationToken cancellationToken = default) =>
-        mediator.Send(new GetAudioStreamRequest { Url = url }, cancellationToken);
+    protected override Task<DownloadStreamInfo> GetAudioStream(
+        string url,
+        CancellationToken cancellationToken = default
+    ) => mediator.Send(new GetAudioStreamRequest(url), cancellationToken);
 
-    protected override Task<string> GetAudioUrl(string url, CancellationToken cancellationToken = default) =>
-        mediator.Send(new GetAudioUrlRequest { Url = url }, cancellationToken);
+    protected override Task<string> GetAudioUrl(
+        string url,
+        CancellationToken cancellationToken = default
+    ) => mediator.Send(new GetAudioUrlRequest(url), cancellationToken);
 }

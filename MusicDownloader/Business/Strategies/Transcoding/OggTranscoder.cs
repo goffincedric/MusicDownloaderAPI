@@ -12,9 +12,12 @@ namespace MusicDownloader.Business.Strategies.Transcoding;
 public class OggTranscoder() : TranscoderStrategy(true, true)
 {
     private const string TargetContainer = ContainerConstants.Containers.Ogg;
-    private readonly IMetadataMapperStrategy _metadataMapper = new VorbisMetadataMapper();
+    private readonly VorbisMetadataMapper _metadataMapper = new();
 
-    public override async Task<DownloadStreamInfo> Execute(string audioUrl, CancellationToken cancellationToken)
+    public override async Task<DownloadStreamInfo> Execute(
+        string audioUrl,
+        CancellationToken cancellationToken
+    )
     {
         // Map metadata to vorbis tag system and set filename
         var metadata = _metadataMapper.Execute(TrackMetadata);
@@ -22,8 +25,9 @@ public class OggTranscoder() : TranscoderStrategy(true, true)
         // Pipe in audio stream and cover art as video stream if available
         var transcodeBuilder = FFMpegArguments.FromUrlInput(new Uri(audioUrl));
         var coverArt = await CoverArtStreamTask;
-        if (coverArt != null) transcodeBuilder = transcodeBuilder.AddPipeInput(new StreamPipeSource(coverArt));
-        
+        if (coverArt != null)
+            transcodeBuilder = transcodeBuilder.AddPipeInput(new StreamPipeSource(coverArt));
+
         // Get file extension from download url
         // var foundMimeType = QueryHelpers.ParseQuery(new Uri(audioUrl).Query).TryGetValue("mime", out var mimeType);
         // if (!foundMimeType)
@@ -35,22 +39,24 @@ public class OggTranscoder() : TranscoderStrategy(true, true)
         var memoryStream = new MemoryStream();
         await transcodeBuilder
             .AddMetaData(metadata)
-            .OutputToPipe(new StreamPipeSink(memoryStream),
-                options => options
-                    .ForceFormat(TargetContainer)
-                    .WithAudioCodec(AudioCodec.LibVorbis)
-                    .WithAudioBitrate(YoutubeConstants.AudioQuality)
-                    .WithAudioSamplingRate(YoutubeConstants.SamplingRate)
-                    .WithVideoCodec(VideoCodec.LibTheora) // Codec needed for cover art video
-                    .WithFramerate(YoutubeConstants.CoverFramerate)
-                    .WithCustomArgument("-q:v 10") // Highest quality video
-                    .UsingMultithreading(true)
-                    .WithFastStart()
+            .OutputToPipe(
+                new StreamPipeSink(memoryStream),
+                options =>
+                    options
+                        .ForceFormat(TargetContainer)
+                        .WithAudioCodec(AudioCodec.LibVorbis)
+                        .WithAudioBitrate(YoutubeConstants.AudioQuality)
+                        .WithAudioSamplingRate(YoutubeConstants.SamplingRate)
+                        .WithVideoCodec(VideoCodec.LibTheora) // Codec needed for cover art video
+                        .WithFramerate(YoutubeConstants.CoverFramerate)
+                        .WithCustomArgument("-q:v 10") // Highest quality video
+                        .UsingMultithreading(true)
+                        .WithFastStart()
             )
             .ProcessAsynchronously();
         // Reset stream position and return
         memoryStream.Position = 0;
-        
+
         // Construct downloaded stream info and return
         return new DownloadStreamInfo(memoryStream, TargetContainer);
     }

@@ -4,16 +4,13 @@ using MusicDownloader.Pocos.User;
 
 namespace MusicDownloader.Business.Requests.User;
 
-public class GetJwtTokenForUserRequest : IRequest<string>
-{
-    public ApiUser User { get; set; }
-}
+public record GetJwtTokenForUserRequest(ApiUser User) : IRequest<string>;
 
 public class GetJwtTokenForUserRequestHandler(JwtTokenGenerator tokenGenerator)
     : IRequestHandler<GetJwtTokenForUserRequest, string>
 {
-    public Task<string> Handle(GetJwtTokenForUserRequest request, CancellationToken cancellationToken)
-    {
-        return Task.FromResult(tokenGenerator.CreateToken(request.User));
-    }
+    public Task<string> Handle(
+        GetJwtTokenForUserRequest request,
+        CancellationToken cancellationToken
+    ) => Task.FromResult(tokenGenerator.CreateToken(request.User));
 }
