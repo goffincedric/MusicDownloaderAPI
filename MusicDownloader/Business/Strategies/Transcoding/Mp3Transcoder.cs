@@ -2,7 +2,6 @@ using System.Net;
 using FFMpegCore;
 using FFMpegCore.Pipes;
 using Microsoft.AspNetCore.WebUtilities;
-using MusicDownloader.Business.Models;
 using MusicDownloader.Business.Strategies.MetadataMapping;
 using MusicDownloader.Business.Strategies.Transcoding._base;
 using MusicDownloader.Shared.Constants;
@@ -11,13 +10,13 @@ using MusicDownloader.Shared.Utils;
 
 namespace MusicDownloader.Business.Strategies.Transcoding;
 
-public class Mp3Transcoder() : TranscoderStrategy(true, true)
+public class Mp3Transcoder() : TranscoderStrategy(true, true, ContainerConstants.Containers.Mp3)
 {
-    private const string TargetContainer = ContainerConstants.Containers.Mp3;
     private readonly ID3MetadataMapper _metadataMapper = new();
 
-    public override async Task<DownloadStreamInfo> Execute(
+    public override async Task Execute(
         string audioUrl,
+        Stream targetStream,
         CancellationToken cancellationToken
     )
     {
@@ -43,11 +42,10 @@ public class Mp3Transcoder() : TranscoderStrategy(true, true)
         var extension = MimeTypeUtils.MapMimeTypeToExtension(mimeType.ToString());
 
         // Add metadata, configure FFMpeg and start transcoding asynchronously
-        var memoryStream = new MemoryStream();
         await transcodeBuilder
             .AddMetaData(metadata)
             .OutputToPipe(
-                new StreamPipeSink(memoryStream),
+                new StreamPipeSink(targetStream),
                 options =>
                     options
                         // Doesn't work currently: https://github.com/rosenbjerg/FFMpegCore/issues/429
@@ -59,10 +57,5 @@ public class Mp3Transcoder() : TranscoderStrategy(true, true)
                         .WithFastStart()
             )
             .ProcessAsynchronously();
-        // Reset stream position
-        memoryStream.Position = 0;
-
-        // Construct downloaded stream info and return
-        return new DownloadStreamInfo(memoryStream, TargetContainer);
     }
 }

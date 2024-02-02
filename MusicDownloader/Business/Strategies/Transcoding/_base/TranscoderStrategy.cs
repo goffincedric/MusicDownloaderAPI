@@ -1,5 +1,4 @@
-﻿using MusicDownloader.Business.Models;
-using MusicDownloader.Pocos.Youtube;
+﻿using MusicDownloader.Pocos.Youtube;
 
 namespace MusicDownloader.Business.Strategies.Transcoding._base;
 
@@ -9,18 +8,32 @@ public abstract class TranscoderStrategy : ITranscoderStrategy
 
     private readonly bool _requiresCoverArtStream;
 
+    protected readonly string TargetContainer;
+
     protected TrackMetadata TrackMetadata;
     protected Task<Stream?> CoverArtStreamTask;
 
-    protected TranscoderStrategy(bool requiresTrackMetadata, bool requiresCoverArtStream)
+    protected TranscoderStrategy(
+        bool requiresTrackMetadata,
+        bool requiresCoverArtStream,
+        string targetContainer
+    )
     {
         _requiresTrackMetadata = requiresTrackMetadata;
         _requiresCoverArtStream = requiresCoverArtStream;
+        TargetContainer = targetContainer;
     }
 
     public bool RequiresTrackMetadata() => _requiresTrackMetadata;
 
     public bool RequiresCoverArtStream() => _requiresCoverArtStream;
+
+    public string GetTargetContainer() => TargetContainer;
+
+    public Task Execute(string audioUrl, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 
     /// <param name="trackMetadata">An object with metadata about the audio, which will be included in the transcoded audio</param>
     public void SetTrackMetadata(TrackMetadata trackMetadata) => TrackMetadata = trackMetadata;
@@ -29,10 +42,13 @@ public abstract class TranscoderStrategy : ITranscoderStrategy
     public void SetCoverArtStream(Task<Stream?> coverArtStreamTask) =>
         CoverArtStreamTask = coverArtStreamTask;
 
-    // TODO: Remove?
+    #region Overridable methods
 
-    public abstract Task<DownloadStreamInfo> Execute(
+    public abstract Task Execute(
         string audioUrl,
+        Stream targetStream,
         CancellationToken cancellationToken
     );
+
+    #endregion
 }

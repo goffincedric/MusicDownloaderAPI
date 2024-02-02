@@ -4,13 +4,13 @@ using YoutubeReExplode.Videos.Streams;
 
 namespace MusicDownloader.Business.Requests.Youtube.Video;
 
-public record GetAudioUrlRequest(string Url) : IRequest<string>;
+public record GetStreamInfoRequest(string Url) : IRequest<IStreamInfo>;
 
 public class GetAudioUrlRequestHandler(YoutubeClient youtubeClient)
-    : IRequestHandler<GetAudioUrlRequest, string>
+    : IRequestHandler<GetStreamInfoRequest, IStreamInfo>
 {
-    public async Task<string> Handle(
-        GetAudioUrlRequest request,
+    public async Task<IStreamInfo> Handle(
+        GetStreamInfoRequest request,
         CancellationToken cancellationToken
     )
     {
@@ -19,7 +19,6 @@ public class GetAudioUrlRequestHandler(YoutubeClient youtubeClient)
             request.Url,
             cancellationToken
         );
-        var streamInfo = streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate();
-        return streamInfo.Url;
+        return streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate();
     }
 }

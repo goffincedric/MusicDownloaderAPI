@@ -26,5 +26,8 @@ public static class ErrorCodes
 
         public static readonly string MimeTypeNotInDownloadUrl =
             $"{ClassName}_MIME_TYPE_NOT_IN_DOWNLOAD_URL";
+
+        public static readonly string NoMediaSourceSelected =
+            $"{ClassName}_NO_MEDIA_SOURCE_SELECTED";
     }
 }

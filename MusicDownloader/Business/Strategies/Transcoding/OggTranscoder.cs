@@ -1,21 +1,19 @@
 ﻿using FFMpegCore;
 using FFMpegCore.Enums;
 using FFMpegCore.Pipes;
-using MusicDownloader.Business.Models;
 using MusicDownloader.Business.Strategies.MetadataMapping;
-using MusicDownloader.Business.Strategies.MetadataMapping._base;
 using MusicDownloader.Business.Strategies.Transcoding._base;
 using MusicDownloader.Shared.Constants;
 
 namespace MusicDownloader.Business.Strategies.Transcoding;
 
-public class OggTranscoder() : TranscoderStrategy(true, true)
+public class OggTranscoder() : TranscoderStrategy(true, true, ContainerConstants.Containers.Ogg)
 {
-    private const string TargetContainer = ContainerConstants.Containers.Ogg;
     private readonly VorbisMetadataMapper _metadataMapper = new();
 
-    public override async Task<DownloadStreamInfo> Execute(
+    public override async Task Execute(
         string audioUrl,
+        Stream targetStream,
         CancellationToken cancellationToken
     )
     {
@@ -28,19 +26,11 @@ public class OggTranscoder() : TranscoderStrategy(true, true)
         if (coverArt != null)
             transcodeBuilder = transcodeBuilder.AddPipeInput(new StreamPipeSource(coverArt));
 
-        // Get file extension from download url
-        // var foundMimeType = QueryHelpers.ParseQuery(new Uri(audioUrl).Query).TryGetValue("mime", out var mimeType);
-        // if (!foundMimeType)
-        //     throw new MusicDownloaderException("Couldn't parse mimetype from download url",
-        //         ErrorCodes.Youtube.MimeTypeNotInDownloadUrl, HttpStatusCode.InternalServerError);
-        // var extension = MimeTypeUtils.MapMimeTypeToExtension(mimeType.ToString());
-
         // Add metadata, configure FFMpeg and start transcoding asynchronously
-        var memoryStream = new MemoryStream();
         await transcodeBuilder
             .AddMetaData(metadata)
             .OutputToPipe(
-                new StreamPipeSink(memoryStream),
+                new StreamPipeSink(targetStream),
                 options =>
                     options
                         .ForceFormat(TargetContainer)
@@ -54,10 +44,5 @@ public class OggTranscoder() : TranscoderStrategy(true, true)
                         .WithFastStart()
             )
             .ProcessAsynchronously();
-        // Reset stream position and return
-        memoryStream.Position = 0;
-
-        // Construct downloaded stream info and return
-        return new DownloadStreamInfo(memoryStream, TargetContainer);
     }
 }

@@ -1,12 +1,11 @@
 using System.Net;
-using System.Net.Http.Headers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using MusicDownloader.Api.Controllers._base;
 using MusicDownloader.Business.Models;
-using MusicDownloader.Business.Requests.Music.Download;
+using MusicDownloader.Business.Requests.Music.Streaming;
 using MusicDownloader.Business.Requests.Youtube.Video;
-using MusicDownloader.Business.Strategies.MusicDownload;
+using MusicDownloader.Business.Strategies.MusicStream;
 using MusicDownloader.Shared.Constants;
 using MusicDownloader.Shared.Exceptions;
 using ILogger = Serilog.ILogger;
@@ -43,14 +42,18 @@ public class VideoController(ILogger logger, IMediator mediator)
     )]
     [ProducesResponseType(typeof(FileStreamResult), (int)HttpStatusCode.OK)]
     // TODO: Move to controller query models
-    public async Task<IActionResult> DownloadVideo(
+    public async Task DownloadVideo(
         [FromQuery(Name = "url")] string url,
         [FromQuery(Name = "container")] string? container
     )
     {
         // Validate
         if (string.IsNullOrWhiteSpace(url))
-            return BadRequest();
+        {
+            BadRequest();
+            return;
+        }
+
         // Check if container is supported youtube container
         if (
             !string.IsNullOrWhiteSpace(container)
@@ -64,21 +67,9 @@ public class VideoController(ILogger logger, IMediator mediator)
                 HttpStatusCode.BadRequest
             );
 
-        // Download audio using youtube strategy
-        var videoStream = await mediator.Send(
-            new DownloadAudioRequest(url, container, new YoutubeDownloadStrategy(mediator))
+        // Stream audio using youtube strategy
+        await mediator.Send(
+            new StreamAudioRequest(url, container, new YoutubeStreamStrategy(mediator), Response)
         );
-
-        // Set response headers to correctly reflect stream contents and return stream as file
-        Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
-        Response.Headers.Add(
-            "Content-Disposition",
-            new ContentDispositionHeaderValue("attachment")
-            {
-                FileName = videoStream.FileName,
-                FileNameStar = videoStream.FileName
-            }.ToString()
-        );
-        return File(videoStream.Stream, videoStream.MimeType, true);
     }
 }
