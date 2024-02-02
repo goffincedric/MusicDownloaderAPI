@@ -5,7 +5,7 @@ RUN apt-get update && \
 FROM base as hot
 # Setup git SSH
 ARG PORTAINER_SSH_KEY
-RUN mkdir /root/.ssh/ && \
+RUN mkdir -p /root/.ssh/ && \
     echo $PORTAINER_SSH_KEY | base64 --decode >> /root/.ssh/docker_key && \
     chmod 400 /root/.ssh/docker_key && \
     touch /root/.ssh/known_hosts && \
