@@ -11,7 +11,7 @@ public static class SettingsRegistration
 
         SettingsBase.RegisterConfiguration<JwtOptions>(services);
         SettingsBase.RegisterConfiguration<ApiOptions>(services);
-        
+
         #endregion
     }
 }

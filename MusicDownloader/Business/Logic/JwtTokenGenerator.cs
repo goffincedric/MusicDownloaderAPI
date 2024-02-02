@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
@@ -10,54 +9,49 @@ using ILogger = Serilog.ILogger;
 
 namespace MusicDownloader.Business.Logic;
 
-public class JwtTokenGenerator
+public class JwtTokenGenerator(IOptions<JwtOptions> jwtOptions, ILogger logger)
 {
-    private readonly JwtOptions _jwtOptions;
-    private readonly ILogger _logger;
-
-    public JwtTokenGenerator(IOptions<JwtOptions> jwtOptions, ILogger logger)
-    {
-        _jwtOptions = jwtOptions.Value;
-        _logger = logger;
-    }
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
     public string CreateToken(ApiUser user)
     {
-        var expiration = DateTime.UtcNow.AddMinutes(_jwtOptions.Expiration);
-        var token = CreateJwtToken(
-            CreateClaims(user),
-            CreateSigningCredentials(),
-            expiration
-        );
+        var expiration = DateTimeOffset.UtcNow.AddMinutes(_jwtOptions.Expiration);
+        var token = CreateJwtToken(CreateClaims(user), CreateSigningCredentials(), expiration);
         var tokenHandler = new JwtSecurityTokenHandler();
         return tokenHandler.WriteToken(token);
     }
 
     private JwtSecurityToken CreateJwtToken(
-        IEnumerable<Claim> claims, SigningCredentials credentials, DateTime expiration
-    ) => new(
-        _jwtOptions.Issuer,
-        _jwtOptions.Audience,
-        claims,
-        expires: expiration,
-        signingCredentials: credentials
-    );
+        List<Claim> claims,
+        SigningCredentials credentials,
+        DateTimeOffset expiration
+    ) =>
+        new(
+            _jwtOptions.Issuer,
+            _jwtOptions.Audience,
+            claims,
+            expires: expiration.UtcDateTime,
+            signingCredentials: credentials
+        );
 
-    private IEnumerable<Claim> CreateClaims(ApiUser user)
+    private List<Claim> CreateClaims(ApiUser user)
     {
         try
         {
-            return new List<Claim>
-            {
-                new(JwtRegisteredClaimNames.Sub, user.Uuid),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
-                new(JwtRegisteredClaimNames.Name, user.Name)
-            };
+            return
+            [
+                new Claim(JwtRegisteredClaimNames.Sub, user.Uuid),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(
+                    JwtRegisteredClaimNames.Iat,
+                    DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()
+                ),
+                new Claim(JwtRegisteredClaimNames.Name, user.Name)
+            ];
         }
         catch (Exception e)
         {
-            _logger.Error(e, "Couldn't generate jwt token claims for user {0}", user.Uuid);
+            logger.Error(e, "Couldn't generate jwt token claims for user {0}", user.Uuid);
             throw;
         }
     }
@@ -65,9 +59,7 @@ public class JwtTokenGenerator
     private SigningCredentials CreateSigningCredentials()
     {
         return new SigningCredentials(
-            new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_jwtOptions.Secret)
-            ),
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret)),
             SecurityAlgorithms.HmacSha256
         );
     }

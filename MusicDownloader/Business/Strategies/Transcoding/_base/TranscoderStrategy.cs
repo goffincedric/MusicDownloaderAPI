@@ -1,20 +1,54 @@
-﻿using MusicDownloader.Business.Strategies.MetadataMapping._base;
-using MusicDownloader.Pocos.Youtube;
-using YoutubeReExplode.Videos.Streams;
+﻿using MusicDownloader.Pocos.Youtube;
 
 namespace MusicDownloader.Business.Strategies.Transcoding._base;
 
 public abstract class TranscoderStrategy : ITranscoderStrategy
 {
-    protected Container Container { get; }
-    protected IMetadataMapperStrategy MetadataMapper { get; }
+    private readonly bool _requiresTrackMetadata;
 
-    protected TranscoderStrategy(Container container, IMetadataMapperStrategy metadataMapper)
+    private readonly bool _requiresCoverArtStream;
+
+    protected readonly string TargetContainer;
+
+    protected TrackMetadata TrackMetadata;
+    protected Task<Stream?> CoverArtStreamTask;
+
+    protected TranscoderStrategy(
+        bool requiresTrackMetadata,
+        bool requiresCoverArtStream,
+        string targetContainer
+    )
     {
-        Container = container;
-        MetadataMapper = metadataMapper;
+        _requiresTrackMetadata = requiresTrackMetadata;
+        _requiresCoverArtStream = requiresCoverArtStream;
+        TargetContainer = targetContainer;
     }
 
-    public abstract Task<MusicStream> Execute(string audioUrl, Task<Stream?> coverArtStreamTask,
-        Task<TrackMetadata> trackMetadataTask);
+    public bool RequiresTrackMetadata() => _requiresTrackMetadata;
+
+    public bool RequiresCoverArtStream() => _requiresCoverArtStream;
+
+    public string GetTargetContainer() => TargetContainer;
+
+    public Task Execute(string audioUrl, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <param name="trackMetadata">An object with metadata about the audio, which will be included in the transcoded audio</param>
+    public void SetTrackMetadata(TrackMetadata trackMetadata) => TrackMetadata = trackMetadata;
+
+    /// <param name="coverArtStreamTask">Task that contains an optional stream of the cover art to include</param>
+    public void SetCoverArtStream(Task<Stream?> coverArtStreamTask) =>
+        CoverArtStreamTask = coverArtStreamTask;
+
+    #region Overridable methods
+
+    public abstract Task Execute(
+        string audioUrl,
+        Stream targetStream,
+        CancellationToken cancellationToken
+    );
+
+    #endregion
 }

@@ -1,0 +1,9 @@
+﻿# Configuration directories
+**/_config/**/*
+
+# Entity framework migrations
+**/Migrations/**/*.cs
+
+# Build output directories
+**/obj/**/*
+**/bin/**/*

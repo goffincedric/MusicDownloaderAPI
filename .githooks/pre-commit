@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Restore tools if not done already
+dotnet tool restore
+
+# Check if all files are compliant with csharpier code style
+dotnet csharpier . --check
+
+# If the command fails, print an error message and exit with a non-zero status
+if [ $? -ne 0 ]; then
+    echo "Not all files comply with csharpier code style. Run the following command in the project root to format all project files automatically: 'dotnet csharpier .'"
+    exit 1
+fi

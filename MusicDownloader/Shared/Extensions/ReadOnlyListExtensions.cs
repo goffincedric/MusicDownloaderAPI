@@ -19,7 +19,8 @@ public static class ReadOnlyListExtensions
     {
         for (var i = 0; i < self.Count; i++)
         {
-            if (!predicate(self[i])) continue;
+            if (!predicate(self[i]))
+                continue;
             return i;
         }
 

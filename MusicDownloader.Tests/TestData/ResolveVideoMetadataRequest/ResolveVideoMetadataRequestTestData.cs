@@ -13,7 +13,8 @@ public class ResolveVideoMetadataRequestTestData
             yield return new object[]
             {
                 "ROUND_BRACKETS TITLE_WITH_TOPIC TITLE_WITH_ARTIST_NAME_DASH",
-                "https://www.youtube.com/watch?v=Nucv1NrK3V0", new MetaData
+                "https://www.youtube.com/watch?v=Nucv1NrK3V0",
+                new MetaData
                 {
                     Entries =
                     {
@@ -25,7 +26,8 @@ public class ResolveVideoMetadataRequestTestData
             yield return new object[]
             {
                 "ROUND_BRACKETS TITLE_WITH_ARTIST_NAME_DASH",
-                "https://www.youtube.com/watch?v=dI3xkL7qUAc", new MetaData
+                "https://www.youtube.com/watch?v=dI3xkL7qUAc",
+                new MetaData
                 {
                     Entries =
                     {
@@ -37,7 +39,8 @@ public class ResolveVideoMetadataRequestTestData
             yield return new object[]
             {
                 "METADATA SONG ARTIST ALBUM",
-                "https://www.youtube.com/watch?v=9bZkp7q19f0", new MetaData
+                "https://www.youtube.com/watch?v=9bZkp7q19f0",
+                new MetaData
                 {
                     Entries =
                     {

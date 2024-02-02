@@ -5,7 +5,7 @@ public static class MetadataConstants
     /*
      * https://exiftool.org/TagNames/
      */
-    
+
     public static class VorbisTags
     {
         /**
@@ -44,6 +44,7 @@ public static class MetadataConstants
         public const string Version = "version";
         public const string Vendor = "vendor";
     }
+
     public static class ID3v2_4Tags
     {
         /**

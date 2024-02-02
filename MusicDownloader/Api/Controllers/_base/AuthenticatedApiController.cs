@@ -7,9 +7,4 @@ namespace MusicDownloader.Api.Controllers._base;
 
 [Authorize]
 [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-public class AuthenticatedAnonymousApiController : AnonymousApiController
-{
-    public AuthenticatedAnonymousApiController(ILogger logger) : base(logger)
-    {
-    }
-}
+public class AuthenticatedAnonymousApiController(ILogger logger) : AnonymousApiController(logger);

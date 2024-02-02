@@ -16,7 +16,10 @@ public class ID3MetadataMapper : IMetadataMapperStrategy
         if (trackMetadata.Album != null)
             metadata.Entries.Add(MetadataConstants.ID3v2_4Tags.Album, trackMetadata.Album);
         if (trackMetadata.TrackNumber.HasValue)
-            metadata.Entries.Add(MetadataConstants.ID3v2_4Tags.TrackNumber, trackMetadata.TrackNumber.Value.ToString());
+            metadata.Entries.Add(
+                MetadataConstants.ID3v2_4Tags.TrackNumber,
+                trackMetadata.TrackNumber.Value.ToString()
+            );
         // Return metadata
         return metadata;
     }

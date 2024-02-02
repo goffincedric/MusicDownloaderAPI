@@ -16,7 +16,10 @@ public class VorbisMetadataMapper : IMetadataMapperStrategy
         if (trackMetadata.Album != null)
             metadata.Entries.Add(MetadataConstants.VorbisTags.Album, trackMetadata.Album);
         if (trackMetadata.TrackNumber.HasValue)
-            metadata.Entries.Add(MetadataConstants.VorbisTags.TrackNumber, trackMetadata.TrackNumber.Value.ToString());
+            metadata.Entries.Add(
+                MetadataConstants.VorbisTags.TrackNumber,
+                trackMetadata.TrackNumber.Value.ToString()
+            );
         // Return metadata
         return metadata;
     }

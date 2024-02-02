@@ -19,36 +19,41 @@ public class ResolveVideoMetadataRequestTests
     [Theory]
     [ClassData(typeof(ResolveVideoMetadataRequestTestData.Handle_MusicVideoUrl))]
     public async Task Handle_MusicVideoUrl_ReturnExpectedMetadata(
-        string testCase, string url, MetaData expectedMetadata
+        string testCase,
+        string url,
+        MetaData expectedMetadata
     )
     {
         // Arrange
-        var trackDetails = await new GetVideoDetailsRequestHandler(_youtubeClient).Handle(new GetVideoDetailsRequest
-        {
-            Url = url
-        }, CancellationToken.None);
-        var request = new ResolveMusicMetadataRequest
-        {
-            TrackDetails = trackDetails
-        };
+        var trackDetails = await new GetVideoDetailsRequestHandler(_youtubeClient).Handle(
+            new GetVideoDetailsRequest { Url = url },
+            CancellationToken.None
+        );
+        var request = new ResolveMusicMetadataRequest { TrackDetails = trackDetails };
         var sut = new ResolveMusicMetadataRequestHandler();
 
         // Act
         var result = await sut.Handle(request, CancellationToken.None);
 
         // Assert
-        Assert.Equal(expectedMetadata.Entries.ContainsKey(MetadataConstants.VorbisTags.Artist),
-            result.Entries.ContainsKey(MetadataConstants.VorbisTags.Artist));
+        Assert.Equal(
+            expectedMetadata.Entries.ContainsKey(MetadataConstants.VorbisTags.Artist),
+            result.Entries.ContainsKey(MetadataConstants.VorbisTags.Artist)
+        );
         if (result.Entries.TryGetValue(MetadataConstants.VorbisTags.Artist, out var artist))
             Assert.Equal(expectedMetadata.Entries[MetadataConstants.VorbisTags.Artist], artist);
 
-        Assert.Equal(expectedMetadata.Entries.ContainsKey(MetadataConstants.VorbisTags.Title),
-            result.Entries.ContainsKey(MetadataConstants.VorbisTags.Title));
+        Assert.Equal(
+            expectedMetadata.Entries.ContainsKey(MetadataConstants.VorbisTags.Title),
+            result.Entries.ContainsKey(MetadataConstants.VorbisTags.Title)
+        );
         if (result.Entries.TryGetValue(MetadataConstants.VorbisTags.Title, out var title))
             Assert.Equal(expectedMetadata.Entries[MetadataConstants.VorbisTags.Title], title);
 
-        Assert.Equal(expectedMetadata.Entries.ContainsKey(MetadataConstants.VorbisTags.Album),
-            result.Entries.ContainsKey(MetadataConstants.VorbisTags.Album));
+        Assert.Equal(
+            expectedMetadata.Entries.ContainsKey(MetadataConstants.VorbisTags.Album),
+            result.Entries.ContainsKey(MetadataConstants.VorbisTags.Album)
+        );
         if (result.Entries.TryGetValue(MetadataConstants.VorbisTags.Album, out var album))
             Assert.Equal(expectedMetadata.Entries[MetadataConstants.VorbisTags.Album], album);
     }

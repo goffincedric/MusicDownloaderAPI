@@ -5,28 +5,25 @@ using MusicDownloader.Shared.Extensions;
 
 namespace MusicDownloader.Business.Requests.Music.Metadata;
 
-public class ResolveMusicCoverImageRequest : IRequest<Stream?>
+public record ResolveMusicCoverImageRequest(
+    List<ThumbnailDetails> TrackThumbnails,
+    List<ThumbnailDetails>? PlaylistThumbnails
+) : IRequest<Stream?>;
+
+public class ResolveMusicCoverImageRequestHandler(HttpClient httpClient)
+    : IRequestHandler<ResolveMusicCoverImageRequest, Stream?>
 {
-    public List<ThumbnailDetails> TrackThumbnails { get; set; }
-    public List<ThumbnailDetails>? PlaylistThumbnails { get; set; }
-}
-
-public class ResolveMusicCoverImageRequestHandler : IRequestHandler<ResolveMusicCoverImageRequest, Stream?>
-{
-    private readonly HttpClient _httpClient;
-
-    public ResolveMusicCoverImageRequestHandler(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-
-    public async Task<Stream?> Handle(ResolveMusicCoverImageRequest request, CancellationToken cancellationToken)
+    public async Task<Stream?> Handle(
+        ResolveMusicCoverImageRequest request,
+        CancellationToken cancellationToken
+    )
     {
         // Check if any thumbnails are present
         if (
-            request.TrackThumbnails.Count == 0 &&
-            (request.PlaylistThumbnails is null || request.PlaylistThumbnails.Count == 0)
-        ) return null;
+            request.TrackThumbnails.Count == 0
+            && (request.PlaylistThumbnails is null || request.PlaylistThumbnails.Count == 0)
+        )
+            return null;
 
         // Get best track and playlist thumbnails, if present
         var playlistThumbnail = request.PlaylistThumbnails?.GetWithHighestResolution();
@@ -42,10 +39,10 @@ public class ResolveMusicCoverImageRequestHandler : IRequestHandler<ResolveMusic
         else if (trackThumbnail.Area >= YoutubeConstants.MinRequiredCoverResolution)
             thumbnail = trackThumbnail;
         else
-            thumbnail = request.TrackThumbnails
-                .Concat(request.PlaylistThumbnails ?? new List<ThumbnailDetails>())
+            thumbnail = request
+                .TrackThumbnails.Concat(request.PlaylistThumbnails ?? new List<ThumbnailDetails>())
                 .GetWithHighestResolution();
         // Download thumbnail as stream and return
-        return await _httpClient.GetStreamAsync(thumbnail.Url, cancellationToken);
+        return await httpClient.GetStreamAsync(thumbnail.Url, cancellationToken);
     }
 }
