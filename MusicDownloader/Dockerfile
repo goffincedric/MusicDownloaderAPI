@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 as base
+﻿FROM mcr.microsoft.com/dotnet/sdk:7.0 as base
 RUN apt-get update && \
     apt-get install -yq ssh git
 
