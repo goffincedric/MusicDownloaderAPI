@@ -5,7 +5,7 @@ namespace MusicDownloader.Shared.Extensions;
 
 public static class StringExtensions
 {
-    private static readonly HashSet<char> UnsafeFilenameChars = [..Path.GetInvalidFileNameChars()];
+    private static readonly HashSet<char> UnsafeFilenameChars = new(Path.GetInvalidFileNameChars());
 
     public static string ReplaceIgnoreCase(this string s, string oldValue, string newValue) =>
         s.Replace(oldValue, newValue, true, CultureInfo.InvariantCulture);

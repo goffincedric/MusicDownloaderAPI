@@ -11,12 +11,19 @@ public record StreamAudioRequest(
     HttpResponse HttpResponse
 ) : IRequest;
 
-public class StreamAudioRequestHandler(IMediator mediator) : IRequestHandler<StreamAudioRequest>
+public class StreamAudioRequestHandler : IRequestHandler<StreamAudioRequest>
 {
+    private readonly IMediator _mediator;
+
+    public StreamAudioRequestHandler(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
     public async Task Handle(StreamAudioRequest request, CancellationToken cancellationToken)
     {
         // Resolve transcoder strategy from container
-        var transcodingStrategy = await mediator.Send(
+        var transcodingStrategy = await _mediator.Send(
             new ResolveContainerTranscoderRequest(request.Container),
             cancellationToken
         );

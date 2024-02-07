@@ -10,9 +10,12 @@ using MusicDownloader.Shared.Utils;
 
 namespace MusicDownloader.Business.Strategies.Transcoding;
 
-public class Mp3Transcoder() : TranscoderStrategy(true, true, ContainerConstants.Containers.Mp3)
+public class Mp3Transcoder : TranscoderStrategy
 {
     private readonly ID3MetadataMapper _metadataMapper = new();
+
+    public Mp3Transcoder()
+        : base(true, true, ContainerConstants.Containers.Mp3) { }
 
     public override async Task Execute(
         string audioUrl,

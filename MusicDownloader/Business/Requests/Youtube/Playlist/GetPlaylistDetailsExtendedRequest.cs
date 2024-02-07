@@ -8,19 +8,26 @@ namespace MusicDownloader.Business.Requests.Youtube.Playlist;
 public record GetPlaylistDetailsExtendedRequest(string Url, bool IncludeLiveStreams = false)
     : IRequest<PlaylistDetailsExtended>;
 
-public class GetPlaylistDetailsExtendedRequestHandler(YoutubeClient youtube)
+public class GetPlaylistDetailsExtendedRequestHandler
     : IRequestHandler<GetPlaylistDetailsExtendedRequest, PlaylistDetailsExtended>
 {
+    private readonly YoutubeClient _youtube;
+
+    public GetPlaylistDetailsExtendedRequestHandler(YoutubeClient youtube)
+    {
+        _youtube = youtube;
+    }
+
     public async Task<PlaylistDetailsExtended> Handle(
         GetPlaylistDetailsExtendedRequest metadataRequest,
         CancellationToken cancellationToken
     )
     {
         // Get playlist and videos
-        var playlistTask = youtube
+        var playlistTask = _youtube
             .Playlists.GetAsync(metadataRequest.Url, cancellationToken)
             .AsTask();
-        var playlistVideosTask = youtube
+        var playlistVideosTask = _youtube
             .Playlists.GetVideosAsync(metadataRequest.Url, cancellationToken)
             .CollectAsync()
             .AsTask();

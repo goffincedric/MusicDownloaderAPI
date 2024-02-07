@@ -9,9 +9,16 @@ using ILogger = Serilog.ILogger;
 namespace MusicDownloader.Api.Controllers.Youtube;
 
 [Route("youtube/[controller]")]
-public class PlaylistController(ILogger logger, IMediator mediator)
-    : AuthenticatedAnonymousApiController(logger)
+public class PlaylistController : AuthenticatedAnonymousApiController
 {
+    private readonly IMediator _mediator;
+
+    public PlaylistController(ILogger logger, IMediator mediator)
+        : base(logger)
+    {
+        _mediator = mediator;
+    }
+
     [HttpGet]
     [Produces("application/json")]
     [ProducesResponseType(typeof(PlaylistDetailsExtended), (int)HttpStatusCode.OK)]
@@ -22,7 +29,7 @@ public class PlaylistController(ILogger logger, IMediator mediator)
             return BadRequest();
 
         // Get result
-        var result = await mediator.Send(new GetPlaylistDetailsExtendedRequest(url));
+        var result = await _mediator.Send(new GetPlaylistDetailsExtendedRequest(url));
 
         // Return
         return Ok(result);

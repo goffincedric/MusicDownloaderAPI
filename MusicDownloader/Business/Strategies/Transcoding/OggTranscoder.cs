@@ -7,9 +7,12 @@ using MusicDownloader.Shared.Constants;
 
 namespace MusicDownloader.Business.Strategies.Transcoding;
 
-public class OggTranscoder() : TranscoderStrategy(true, true, ContainerConstants.Containers.Ogg)
+public class OggTranscoder : TranscoderStrategy
 {
     private readonly VorbisMetadataMapper _metadataMapper = new();
+
+    public OggTranscoder()
+        : base(true, true, ContainerConstants.Containers.Ogg) { }
 
     public override async Task Execute(
         string audioUrl,
