@@ -10,8 +10,11 @@ using YoutubeReExplode.Videos.Streams;
 
 namespace MusicDownloader.Business.Strategies.MusicStream;
 
-public class YoutubeStreamStrategy(IMediator mediator) : MusicStreamStrategy(mediator)
+public class YoutubeStreamStrategy : MusicStreamStrategy
 {
+    public YoutubeStreamStrategy(IMediator mediator)
+        : base(mediator) { }
+
     private IStreamInfo SelectedStreamInfo { get; set; } = null!;
 
     protected override void Validate(
@@ -84,12 +87,12 @@ public class YoutubeStreamStrategy(IMediator mediator) : MusicStreamStrategy(med
     private async Task<IStreamInfo> GetStreamInfo(
         string url,
         CancellationToken cancellationToken
-    ) => await mediator.Send(new GetStreamInfoRequest(url), cancellationToken);
+    ) => await Mediator.Send(new GetStreamInfoRequest(url), cancellationToken);
 
     private Task<Stream> GetAudioStream(
         IStreamInfo streamInfo,
         CancellationToken cancellationToken = default
-    ) => mediator.Send(new GetAudioStreamRequest(streamInfo), cancellationToken);
+    ) => Mediator.Send(new GetAudioStreamRequest(streamInfo), cancellationToken);
 
     #endregion
 }

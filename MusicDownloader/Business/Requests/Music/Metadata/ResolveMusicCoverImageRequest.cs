@@ -10,9 +10,16 @@ public record ResolveMusicCoverImageRequest(
     List<ThumbnailDetails>? PlaylistThumbnails
 ) : IRequest<Stream?>;
 
-public class ResolveMusicCoverImageRequestHandler(HttpClient httpClient)
+public class ResolveMusicCoverImageRequestHandler
     : IRequestHandler<ResolveMusicCoverImageRequest, Stream?>
 {
+    private readonly HttpClient _httpClient;
+
+    public ResolveMusicCoverImageRequestHandler(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
+
     public async Task<Stream?> Handle(
         ResolveMusicCoverImageRequest request,
         CancellationToken cancellationToken
@@ -43,6 +50,6 @@ public class ResolveMusicCoverImageRequestHandler(HttpClient httpClient)
                 .TrackThumbnails.Concat(request.PlaylistThumbnails ?? new List<ThumbnailDetails>())
                 .GetWithHighestResolution();
         // Download thumbnail as stream and return
-        return await httpClient.GetStreamAsync(thumbnail.Url, cancellationToken);
+        return await _httpClient.GetStreamAsync(thumbnail.Url, cancellationToken);
     }
 }

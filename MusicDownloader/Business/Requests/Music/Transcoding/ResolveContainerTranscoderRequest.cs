@@ -7,7 +7,7 @@ namespace MusicDownloader.Business.Requests.Music.Transcoding;
 
 public record ResolveContainerTranscoderRequest(string? Container) : IRequest<TranscoderStrategy?>;
 
-public class ResolveContainerTranscoderRequestHandler()
+public class ResolveContainerTranscoderRequestHandler
     : IRequestHandler<ResolveContainerTranscoderRequest, TranscoderStrategy?>
 {
     public Task<TranscoderStrategy?> Handle(

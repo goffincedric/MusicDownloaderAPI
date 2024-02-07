@@ -10,9 +10,16 @@ using ILogger = Serilog.ILogger;
 namespace MusicDownloader.Api.Controllers.Auth;
 
 [Route("auth")]
-public class AuthenticationController(ILogger logger, IMediator mediator)
-    : AnonymousApiController(logger)
+public class AuthenticationController : AnonymousApiController
 {
+    private readonly IMediator _mediator;
+
+    public AuthenticationController(ILogger logger, IMediator mediator)
+        : base(logger)
+    {
+        _mediator = mediator;
+    }
+
     [HttpPost]
     [Route("login")]
     [ProducesResponseType(typeof(AuthResponse), (int)HttpStatusCode.OK)]
@@ -23,8 +30,8 @@ public class AuthenticationController(ILogger logger, IMediator mediator)
             return BadRequest(ModelState);
 
         // Get user and generate JWT token
-        var apiUser = await mediator.Send(new GetApiUserRequest(request.ApiToken));
-        var accessToken = await mediator.Send(new GetJwtTokenForUserRequest(apiUser));
+        var apiUser = await _mediator.Send(new GetApiUserRequest(request.ApiToken));
+        var accessToken = await _mediator.Send(new GetJwtTokenForUserRequest(apiUser));
         return Ok(new AuthResponse { JwtToken = accessToken });
     }
 }

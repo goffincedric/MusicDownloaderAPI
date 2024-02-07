@@ -5,18 +5,31 @@ using ILogger = Serilog.ILogger;
 
 namespace MusicDownloader.Api.Middleware;
 
-public class GlobalExceptionHandlingMiddleware(
-    RequestDelegate next,
-    ILogger logger,
-    IHostEnvironment hostEnvironment,
-    IMapper mapper
-)
+public class GlobalExceptionHandlingMiddleware
 {
+    private readonly RequestDelegate _next;
+    private readonly ILogger _logger;
+    private readonly IHostEnvironment _hostEnvironment;
+    private readonly IMapper _mapper;
+
+    public GlobalExceptionHandlingMiddleware(
+        RequestDelegate next,
+        ILogger logger,
+        IHostEnvironment hostEnvironment,
+        IMapper mapper
+    )
+    {
+        _next = next;
+        _logger = logger;
+        _hostEnvironment = hostEnvironment;
+        _mapper = mapper;
+    }
+
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try
         {
-            await next(httpContext);
+            await _next(httpContext);
         }
         catch (Exception ex)
         {
@@ -26,11 +39,11 @@ public class GlobalExceptionHandlingMiddleware(
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        logger.Error(exception.ToString());
+        _logger.Error(exception.ToString());
         // Map error details
-        var mappedErrorDetails = mapper.Map<ErrorDetails>(exception);
-        mappedErrorDetails.ExtraInfo = hostEnvironment.IsDevelopment()
-            ? [exception.StackTrace]
+        var mappedErrorDetails = _mapper.Map<ErrorDetails>(exception);
+        mappedErrorDetails.ExtraInfo = _hostEnvironment.IsDevelopment()
+            ? new[] { exception.StackTrace }
             : Array.Empty<string>();
 
         // Set response details and send
@@ -49,8 +62,5 @@ public static class GlobalExceptionHandlingMiddlewareExtensions
 {
     public static IApplicationBuilder UseGlobalExceptionHandlingMiddleware(
         this IApplicationBuilder app
-    )
-    {
-        return app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-    }
+    ) => app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 }

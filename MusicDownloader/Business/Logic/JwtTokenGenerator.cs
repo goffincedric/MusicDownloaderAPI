@@ -9,9 +9,16 @@ using ILogger = Serilog.ILogger;
 
 namespace MusicDownloader.Business.Logic;
 
-public class JwtTokenGenerator(IOptions<JwtOptions> jwtOptions, ILogger logger)
+public class JwtTokenGenerator
 {
-    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
+    private readonly ILogger _logger;
+    private readonly JwtOptions _jwtOptions;
+
+    public JwtTokenGenerator(IOptions<JwtOptions> jwtOptions, ILogger logger)
+    {
+        _logger = logger;
+        _jwtOptions = jwtOptions.Value;
+    }
 
     public string CreateToken(ApiUser user)
     {
@@ -38,20 +45,20 @@ public class JwtTokenGenerator(IOptions<JwtOptions> jwtOptions, ILogger logger)
     {
         try
         {
-            return
-            [
-                new Claim(JwtRegisteredClaimNames.Sub, user.Uuid),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(
+            return new List<Claim>
+            {
+                new(JwtRegisteredClaimNames.Sub, user.Uuid),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new(
                     JwtRegisteredClaimNames.Iat,
                     DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()
                 ),
-                new Claim(JwtRegisteredClaimNames.Name, user.Name)
-            ];
+                new(JwtRegisteredClaimNames.Name, user.Name)
+            };
         }
         catch (Exception e)
         {
-            logger.Error(e, "Couldn't generate jwt token claims for user {0}", user.Uuid);
+            _logger.Error(e, "Couldn't generate jwt token claims for user {0}", user.Uuid);
             throw;
         }
     }

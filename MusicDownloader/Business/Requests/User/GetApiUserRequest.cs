@@ -8,10 +8,14 @@ namespace MusicDownloader.Business.Requests.User;
 
 public record GetApiUserRequest(string UserToken) : IRequest<ApiUser>;
 
-public class GetApiUserRequestHandler(IOptions<ApiOptions> apiOptions)
-    : IRequestHandler<GetApiUserRequest, ApiUser>
+public class GetApiUserRequestHandler : IRequestHandler<GetApiUserRequest, ApiUser>
 {
-    private readonly ApiOptions _apiOptions = apiOptions.Value;
+    private readonly ApiOptions _apiOptions;
+
+    public GetApiUserRequestHandler(IOptions<ApiOptions> apiOptions)
+    {
+        _apiOptions = apiOptions.Value;
+    }
 
     public Task<ApiUser> Handle(GetApiUserRequest request, CancellationToken cancellationToken)
     {

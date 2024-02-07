@@ -8,7 +8,12 @@ namespace MusicDownloader.Api.Controllers._base;
 [ApiController]
 [ProducesResponseType(typeof(ErrorDetails), (int)HttpStatusCode.BadRequest)]
 [ProducesResponseType(typeof(ErrorDetails), (int)HttpStatusCode.InternalServerError)]
-public class AnonymousApiController(ILogger logger) : ControllerBase
+public class AnonymousApiController : ControllerBase
 {
-    protected readonly ILogger Logger = logger;
+    protected readonly ILogger Logger;
+
+    public AnonymousApiController(ILogger logger)
+    {
+        Logger = logger;
+    }
 }

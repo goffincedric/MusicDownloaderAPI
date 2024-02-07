@@ -13,10 +13,10 @@ public abstract class YoutubeConstants
     public const int CoverFramerate = 1;
 
     public static readonly Container[] SupportedContainers =
-    [
+    {
         new Container(ContainerConstants.Containers.Ogg),
         new Container(ContainerConstants.Containers.Mp3),
         new Container(ContainerConstants.Containers.Opus),
         new Container(ContainerConstants.Containers.Aac)
-    ];
+    };
 }

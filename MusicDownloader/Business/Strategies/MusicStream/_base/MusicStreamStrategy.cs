@@ -10,8 +10,15 @@ using MusicDownloader.Shared.Utils;
 
 namespace MusicDownloader.Business.Strategies.MusicStream._base;
 
-public abstract class MusicStreamStrategy(IMediator mediator) : IMusicStreamStrategy
+public abstract class MusicStreamStrategy : IMusicStreamStrategy
 {
+    protected readonly IMediator Mediator;
+
+    public MusicStreamStrategy(IMediator mediator)
+    {
+        Mediator = mediator;
+    }
+
     public async Task Execute(
         string url,
         ITranscoderStrategy? transcoderStrategy,
@@ -20,7 +27,7 @@ public abstract class MusicStreamStrategy(IMediator mediator) : IMusicStreamStra
     )
     {
         // Get music details and validate them
-        var (trackDetails, playlistDetailsExtended) = await mediator.Send(
+        var (trackDetails, playlistDetailsExtended) = await Mediator.Send(
             new GetDownloadRequestDetailsRequest(url),
             cancellationToken
         );
@@ -96,7 +103,7 @@ public abstract class MusicStreamStrategy(IMediator mediator) : IMusicStreamStra
         // Optionally, set cover art metadata if required by transcoder strategy
         if (!transcoderStrategy.RequiresCoverArtStream())
             return;
-        var coverArtStreamTask = mediator.Send(
+        var coverArtStreamTask = Mediator.Send(
             new ResolveMusicCoverImageRequest(
                 trackDetails.Thumbnails,
                 playlistDetailsExtended?.Thumbnails
@@ -115,7 +122,7 @@ public abstract class MusicStreamStrategy(IMediator mediator) : IMusicStreamStra
         PlaylistDetailsExtended? playlistDetailsExtended,
         CancellationToken cancellationToken = default
     ) =>
-        await mediator.Send(
+        await Mediator.Send(
             new ResolveMusicMetadataRequest(trackDetails, playlistDetailsExtended),
             cancellationToken
         );

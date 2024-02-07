@@ -8,9 +8,18 @@ namespace MusicDownloader.Business.Requests.Youtube.Download;
 
 public record GetDownloadRequestDetailsRequest(string Url) : IRequest<DownloadRequestDetails>;
 
-public class GetDownloadRequestDetailsRequestHandler(IMediator mediator, ILogger logger)
+public class GetDownloadRequestDetailsRequestHandler
     : IRequestHandler<GetDownloadRequestDetailsRequest, DownloadRequestDetails>
 {
+    private readonly IMediator _mediator;
+    private readonly ILogger _logger;
+
+    public GetDownloadRequestDetailsRequestHandler(IMediator mediator, ILogger logger)
+    {
+        _mediator = mediator;
+        _logger = logger;
+    }
+
     public async Task<DownloadRequestDetails> Handle(
         GetDownloadRequestDetailsRequest request,
         CancellationToken cancellationToken
@@ -20,18 +29,18 @@ public class GetDownloadRequestDetailsRequestHandler(IMediator mediator, ILogger
         PlaylistDetailsExtended? playlistDetailsExtended = null;
         try
         {
-            playlistDetailsExtended = await mediator.Send(
+            playlistDetailsExtended = await _mediator.Send(
                 new GetPlaylistDetailsExtendedRequest(request.Url),
                 cancellationToken
             );
         }
         catch (Exception)
         {
-            logger.Information("Couldn't resolve playlist info from url.");
+            _logger.Information("Couldn't resolve playlist info from url.");
         }
 
         // Get track details
-        var trackDetails = await mediator.Send(
+        var trackDetails = await _mediator.Send(
             new GetVideoDetailsRequest(request.Url, playlistDetailsExtended),
             cancellationToken
         );
