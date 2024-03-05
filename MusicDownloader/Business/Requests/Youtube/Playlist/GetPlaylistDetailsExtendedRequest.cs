@@ -42,40 +42,31 @@ public class GetPlaylistDetailsExtendedRequestHandler
             playlistVideos = playlistVideos.Where(video => !video.IsLive).ToList();
 
         // Map tracks
-        var tracks = playlistVideos.Select(
-            video =>
-                new TrackDetails
-                {
-                    Id = video.Id,
-                    Url = video.Url,
-                    AuthorName = video.Author.ChannelName ?? video.Author.ChannelTitle,
-                    Title = video.Title,
-                    Duration = video.Duration ?? new TimeSpan(),
-                    IsLive = video.IsLive,
-                    Thumbnails = video
-                        .Thumbnails.Select(
-                            thumbnail =>
-                                new ThumbnailDetails
-                                {
-                                    Url = thumbnail.Url,
-                                    Width = thumbnail.Resolution.Width,
-                                    Height = thumbnail.Resolution.Height
-                                }
-                        )
-                        .ToList()
-                }
-        );
-
-        // Map thumbnails
-        var thumbnails = playlist.Thumbnails.Select(
-            thumbnail =>
-                new ThumbnailDetails
+        var tracks = playlistVideos.Select(video => new TrackDetails
+        {
+            Id = video.Id,
+            Url = video.Url,
+            AuthorName = video.Author.ChannelName ?? video.Author.ChannelTitle,
+            Title = video.Title,
+            Duration = video.Duration ?? new TimeSpan(),
+            IsLive = video.IsLive,
+            Thumbnails = video
+                .Thumbnails.Select(thumbnail => new ThumbnailDetails
                 {
                     Url = thumbnail.Url,
                     Width = thumbnail.Resolution.Width,
                     Height = thumbnail.Resolution.Height
-                }
-        );
+                })
+                .ToList()
+        });
+
+        // Map thumbnails
+        var thumbnails = playlist.Thumbnails.Select(thumbnail => new ThumbnailDetails
+        {
+            Url = thumbnail.Url,
+            Width = thumbnail.Resolution.Width,
+            Height = thumbnail.Resolution.Height
+        });
 
         return new PlaylistDetailsExtended
         {

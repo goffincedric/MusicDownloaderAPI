@@ -19,8 +19,8 @@ public class GetApiUserRequestHandler : IRequestHandler<GetApiUserRequest, ApiUs
 
     public Task<ApiUser> Handle(GetApiUserRequest request, CancellationToken cancellationToken)
     {
-        var user = _apiOptions.Users.FirstOrDefault(
-            user => string.Equals(user.Uuid, request.UserToken)
+        var user = _apiOptions.Users.FirstOrDefault(user =>
+            string.Equals(user.Uuid, request.UserToken)
         );
         if (user == null)
             throw new AuthenticationException();

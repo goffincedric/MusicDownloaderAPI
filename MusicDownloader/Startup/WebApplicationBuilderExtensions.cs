@@ -20,12 +20,11 @@ public static class WebApplicationBuilderExtension
         builder.Host.UseSerilog();
 
         // Cors domains
-        builder.Services.AddCors(
-            options =>
-                options.AddPolicy(
-                    ApplicationConstants.Cors.AllowAllOrigins,
-                    policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
-                )
+        builder.Services.AddCors(options =>
+            options.AddPolicy(
+                ApplicationConstants.Cors.AllowAllOrigins,
+                policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+            )
         );
 
         // Add services to the container.

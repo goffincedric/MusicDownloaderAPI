@@ -48,8 +48,8 @@ public static class FFMpegConfigurator
         await RetrieveFFMpegBinariesAsync();
 
         // Configure FFMpegCore
-        GlobalFFOptions.Configure(
-            options => options.BinaryFolder = ApplicationConstants.FFMpegPath
+        GlobalFFOptions.Configure(options =>
+            options.BinaryFolder = ApplicationConstants.FFMpegPath
         );
     }
 }

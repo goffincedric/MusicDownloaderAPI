@@ -43,15 +43,12 @@ public class GetVideoDetailsRequestHandler : IRequestHandler<GetVideoDetailsRequ
         }
 
         // Map thumbnails
-        var thumbnails = videoDetails.Thumbnails.Select(
-            thumbnail =>
-                new ThumbnailDetails
-                {
-                    Url = thumbnail.Url,
-                    Width = thumbnail.Resolution.Width,
-                    Height = thumbnail.Resolution.Height
-                }
-        );
+        var thumbnails = videoDetails.Thumbnails.Select(thumbnail => new ThumbnailDetails
+        {
+            Url = thumbnail.Url,
+            Width = thumbnail.Resolution.Width,
+            Height = thumbnail.Resolution.Height
+        });
 
         return new TrackDetails
         {

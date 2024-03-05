@@ -39,8 +39,8 @@ public class ResolveMusicMetadataRequestHandler
         int? trackNumber = null;
         if (request.PlaylistDetails?.Tracks.Count > 0)
         {
-            var index = request.PlaylistDetails.Tracks.FindIndex(
-                track => track.Id == request.TrackDetails.Id
+            var index = request.PlaylistDetails.Tracks.FindIndex(track =>
+                track.Id == request.TrackDetails.Id
             );
             trackNumber = index + 1;
         }

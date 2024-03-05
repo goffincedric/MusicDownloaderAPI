@@ -45,8 +45,8 @@ public static class MimeTypeUtils
     public static string MapExtensionToMimeType(string fileExtension)
     {
         // First try our own mapping
-        var pair = MimeTypeMapping.FirstOrDefault(
-            pair => pair.Value.Equals(fileExtension, StringComparison.InvariantCultureIgnoreCase)
+        var pair = MimeTypeMapping.FirstOrDefault(pair =>
+            pair.Value.Equals(fileExtension, StringComparison.InvariantCultureIgnoreCase)
         );
         if (!string.IsNullOrEmpty(pair.Key))
             return pair.Key;

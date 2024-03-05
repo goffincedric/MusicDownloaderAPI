@@ -64,8 +64,8 @@ public class VideoController : AuthenticatedAnonymousApiController
         // Check if container is supported youtube container
         if (
             !string.IsNullOrWhiteSpace(container)
-            && !YoutubeConstants.SupportedContainers.Any(
-                supportedContainer => supportedContainer.Name.Equals(container)
+            && !YoutubeConstants.SupportedContainers.Any(supportedContainer =>
+                supportedContainer.Name.Equals(container)
             )
         )
             throw new MusicDownloaderException(
