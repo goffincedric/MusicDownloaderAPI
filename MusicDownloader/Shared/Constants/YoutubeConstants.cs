@@ -17,6 +17,6 @@ public abstract class YoutubeConstants
         new Container(ContainerConstants.Containers.Ogg),
         new Container(ContainerConstants.Containers.Mp3),
         new Container(ContainerConstants.Containers.Opus),
-        new Container(ContainerConstants.Containers.Aac)
+        new Container(ContainerConstants.Containers.Aac),
     };
 }

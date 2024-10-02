@@ -7,3 +7,5 @@
 # Build output directories
 **/obj/**/*
 **/bin/**/*
+
+MusicDownloader.Tests/**/*

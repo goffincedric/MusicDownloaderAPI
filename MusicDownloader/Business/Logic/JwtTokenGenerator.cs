@@ -53,7 +53,7 @@ public class JwtTokenGenerator
                     JwtRegisteredClaimNames.Iat,
                     DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()
                 ),
-                new(JwtRegisteredClaimNames.Name, user.Name)
+                new(JwtRegisteredClaimNames.Name, user.Name),
             };
         }
         catch (Exception e)

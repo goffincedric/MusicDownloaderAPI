@@ -34,7 +34,7 @@ public static class DependencyRegistration
                     ValidAudience = jwtOptions.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(jwtOptions.Secret)
-                    )
+                    ),
                 };
             });
     }
@@ -53,7 +53,7 @@ public static class DependencyRegistration
                     Name = ApplicationConstants.Jwt.HeaderName,
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
-                    Scheme = ApplicationConstants.Jwt.BearerPrefix
+                    Scheme = ApplicationConstants.Jwt.BearerPrefix,
                 }
             );
             // Require JWT Authentication in swagger
@@ -68,11 +68,11 @@ public static class DependencyRegistration
                             Reference = new OpenApiReference
                             {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = ApplicationConstants.Jwt.AuthenticationScheme
-                            }
+                                Id = ApplicationConstants.Jwt.AuthenticationScheme,
+                            },
                         },
                         new List<string>()
-                    }
+                    },
                 }
             );
         });

@@ -55,9 +55,9 @@ public class GetPlaylistDetailsExtendedRequestHandler
                 {
                     Url = thumbnail.Url,
                     Width = thumbnail.Resolution.Width,
-                    Height = thumbnail.Resolution.Height
+                    Height = thumbnail.Resolution.Height,
                 })
-                .ToList()
+                .ToList(),
         });
 
         // Map thumbnails
@@ -65,7 +65,7 @@ public class GetPlaylistDetailsExtendedRequestHandler
         {
             Url = thumbnail.Url,
             Width = thumbnail.Resolution.Width,
-            Height = thumbnail.Resolution.Height
+            Height = thumbnail.Resolution.Height,
         });
 
         return new PlaylistDetailsExtended
@@ -75,7 +75,7 @@ public class GetPlaylistDetailsExtendedRequestHandler
             AuthorName = playlist.Author?.ChannelTitle ?? playlist.Author?.ChannelTitle!,
             Title = playlist.Title,
             Tracks = tracks.ToList(),
-            Thumbnails = thumbnails.ToList()
+            Thumbnails = thumbnails.ToList(),
         };
     }
 }

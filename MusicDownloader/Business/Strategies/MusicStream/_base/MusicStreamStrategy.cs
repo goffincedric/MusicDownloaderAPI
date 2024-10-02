@@ -151,7 +151,7 @@ public abstract class MusicStreamStrategy : IMusicStreamStrategy
         response.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
         {
             FileName = filename,
-            FileNameStar = filename
+            FileNameStar = filename,
         }.ToString();
         response.ContentType = mimeType;
     }

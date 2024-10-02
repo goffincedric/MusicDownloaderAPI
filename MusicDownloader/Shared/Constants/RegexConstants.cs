@@ -13,7 +13,11 @@ public static class RegexConstants
             {
                 new Regex(@"^\s?VEVO\s?-\s?", RegexOptions.IgnoreCase), // Vevo at start, spaces optional
                 new Regex(@"\s?-\s?VEVO\s?$", RegexOptions.IgnoreCase), // Vevo at end, spaces optional
-                new Regex(@"-?\sVEVO\s-?$", RegexOptions.IgnoreCase) // Vevo in the string, spaces required
+                new Regex(
+                    @"-?\sVEVO\s-?$",
+                    RegexOptions.IgnoreCase
+                ) // Vevo in the string, spaces required
+                ,
             };
     }
 }

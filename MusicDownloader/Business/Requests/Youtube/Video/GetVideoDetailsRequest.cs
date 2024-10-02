@@ -47,7 +47,7 @@ public class GetVideoDetailsRequestHandler : IRequestHandler<GetVideoDetailsRequ
         {
             Url = thumbnail.Url,
             Width = thumbnail.Resolution.Width,
-            Height = thumbnail.Resolution.Height
+            Height = thumbnail.Resolution.Height,
         });
 
         return new TrackDetails
@@ -59,7 +59,7 @@ public class GetVideoDetailsRequestHandler : IRequestHandler<GetVideoDetailsRequ
             Duration = videoDetails.Duration ?? new TimeSpan(),
             IsLive = videoDetails.IsLive,
             Thumbnails = thumbnails.ToList(),
-            MusicDetails = musicDetails
+            MusicDetails = musicDetails,
         };
     }
 }
