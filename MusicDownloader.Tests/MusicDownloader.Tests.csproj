@@ -20,7 +20,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="YoutubeReExplode" Version="7.2.2" />
+        <PackageReference Include="YoutubeReExplode" Version="7.2.4" />
     </ItemGroup>
 
     <ItemGroup>
