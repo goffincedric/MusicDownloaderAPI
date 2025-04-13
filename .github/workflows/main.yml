@@ -15,7 +15,6 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Invoke deployment hook
-        uses: distributhor/workflow-webhook@v2.0.3
-        env:
+        uses: distributhor/workflow-webhook@v3.0.8
+        with:
           webhook_url: ${{ secrets.WEBHOOK_URL }}
-          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
