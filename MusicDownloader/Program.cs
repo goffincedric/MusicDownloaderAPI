@@ -6,8 +6,8 @@ Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
 
 try
 {
-    // Retrieve FFMpeg binaries for local use
-    await FFMpegConfigurator.ConfigureFFMpeg();
+    // Configure FFMpegCore
+    FFMpegConfigurator.ConfigureFFMpeg();
 
     // Create web builder
     var builder = WebApplication.CreateBuilder(args).ConfigureWebApplicationBuilder();

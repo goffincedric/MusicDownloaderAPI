@@ -1,6 +1,6 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:7.0 as base
+FROM mcr.microsoft.com/dotnet/sdk:9.0 as base
 RUN apt-get update && \
-    apt-get install -yq ssh git
+    apt-get install -yq ssh git ffmpeg
 
 FROM base as hot
 # Setup git SSH

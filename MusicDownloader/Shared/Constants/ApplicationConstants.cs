@@ -2,7 +2,7 @@
 
 public static class ApplicationConstants
 {
-    public static readonly string FFMpegPath = Path.Combine("binaries", "FFMpeg");
+    public static readonly string FFMpegPath = "/usr/bin";
 
     public static class Cors
     {
